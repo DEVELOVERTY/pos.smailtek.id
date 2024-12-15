@@ -1,0 +1,11 @@
+{
+    "english"           : "English",
+    "indonesian"        : "Indonesian",
+    "china"             : "China",
+    "arabic"            : "Arabic",
+
+    "admin"             : "Admin",
+    "dashboard"         : "Dashboard",
+    "signin"            : "Login Account",
+    "signin-welcome"    : "login to manage your account"
+}

@@ -1,0 +1,42 @@
+<?php 
+
+    return [
+        'purchase_total'        => "Total Purchase",
+        'received_status'       => 'Status Penerimaan',
+        'received'              => "Diterima",
+        'ordered'               => "Proses Order",
+        'pending'               => "Pending",
+        "return"                => "Dikembalikan",
+        "date"                  => "Tanggal Pembelian",
+        "status"                => "Status Penerimaan",
+        "quantity"              => "Quantity",
+        "unit_cost"             => "Biaya Satuan",
+        "before_discount"       => "Sebelum Diskon",
+        "before_tax"            => "Sebelum Pajak",
+        "discount_percentase"   => "Persentase Diskon",
+        "tax"                   => "Pajak",
+        "after_discount"        => "Setelah Diskon",
+        "after_tax"             => "Setelah Pajak",
+        "qty_returned"          => "Qty Dikembalikan",
+        "items_total"           => "Total Item",
+        "net_total"             => "Harga Total",
+        "detail"                => "Detail Pembelian",
+        "return_have"           => "Dapat Dikembalikan",
+        "return_qty"            => "Quantity Return",
+        "return_subtotal"       => "Return Subtotal",
+        "max_qty"               => "Melebihi Quantity Tersedia, nominal telah di ubah otomatis ke batas maximal return",
+        "discount_type"         => "Tipe Diskon",
+        "discount_amount"       => "Jumlah Diskon",
+        "purchase_tax"          => "Pajak Pembelian",
+        "shipping_detail"       => "Detail Pengiriman",
+        "shipping_cost"         => "Biaya Kirim",
+        "discount_total"        => "Jumlah Total Diskon",
+        "print"                 => "Print Invoice Pembelian",
+        "parent_transaction"    => "Induk Transaksi",
+        "detail_return"         => "Detail Pengembalian Produk",
+        "return_print"          => "Print Invoice Pengembalian",
+        "change_payment_status" => "Ubah Status Pembayaran",
+        'other_payment'         => "Biaya Lainnya"
+    ];
+
+?>

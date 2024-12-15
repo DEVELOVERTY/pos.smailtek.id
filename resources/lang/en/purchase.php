@@ -1,0 +1,42 @@
+<?php 
+
+    return [
+        'purchase_total' => "Total Purchase",
+        'received_status' => 'Received Status',
+        'received' => "Received",
+        'ordered' => "Process Order",
+        'pending' => "Pending",
+        "return" => "Returned",
+        "date" => "Purchase Date",
+        "status" => "Acceptance Status",
+        "quantity" => "Quantity",
+        "unit_cost" => "Unit Cost",
+        "before_discount" => "Before Discount",
+        "before_tax" => "Before Tax",
+        "discount_percentage" => "Discount Percentage",
+        "tax" => "Tax",
+        "after_discount" => "After Discount",
+        "after_tax" => "After Tax",
+        "qty_returned" => "Qty returned",
+        "items_total" => "Total Items",
+        "net_total" => "Total Price",
+        "details" => "Purchase Details",
+        "return_have" => "Returnable",
+        "return_qty" => "Quantity Return",
+        "return_subtotal" => "Return Subtotal",
+        "max_qty" => "Exceeding the Available Quantity, the nominal has been changed automatically to the maximum return limit",
+        "discount_type" => "Discount Type",
+        "discount_amount" => "Discount Amount",
+        "purchase_tax" => "Purchase Tax",
+        "shipping_detail" => "Shipping Details",
+        "shipping_cost" => "Shipping Fee",
+        "discount_total" => "Total Discount Amount",
+        "print" => "Print Purchase Invoice",
+        "parent_transaction" => "Transaction Parent",
+        "detail_return" => "Product Return Details",
+        "return_print" => "Print Return Invoice",
+        "change_payment_status" => "Change Payment Status",
+        'other_payment' => "Other Fees"
+    ];
+
+?>

@@ -1,0 +1,42 @@
+<?php 
+
+    return [
+        'purchase_total' => "总购买量",
+        'received_status' => '收到状态',
+        'received' => "收到",
+        'ordered' => "处理订单",
+        'pending' => "待定",
+        "return" => "返回",
+        "date" => "购买日期",
+        "status" => "接受状态",
+        "quantity" => "数量",
+        "unit_cost" => "单位成本",
+        "before_discount" => "折扣前",
+        "before_tax" => "税前",
+        "discount_percentage" => "折扣百分比",
+        "tax" => "税",
+        "after_discount" => "折扣后",
+        "after_tax" => "税后",
+        "qty_returned" => "返回的数量",
+        "items_total" => "物品总数",
+        "net_total" => "总价",
+        "detail" => "购买详情",
+        "return_have" => "可退货",
+        "return_qty" => "数量回报",
+        "return_subtotal" => "返回小计",
+        "max_qty" => "超出可用数量，标称已自动更改为最大退货限制",
+        "discount_type" => "折扣类型",
+        "discount_amount" => "折扣金额",
+        "purchase_tax" => "采购税",
+        "shipping_detail" => "运输详情",
+        "shipping_cost" => "运费",
+        "discount_total" => "总折扣金额",
+        "print" => "打印采购发票",
+        "parent_transaction" => "事务父级",
+        "detail_return" => "产品退货详情",
+        "return_print" => "打印退货发票",
+        "change_payment_status" => "更改付款状态",
+        'other_payment' => "其他费用"
+    ];
+
+?>
