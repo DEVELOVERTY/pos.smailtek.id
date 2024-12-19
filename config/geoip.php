@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'log_failures' => true,
+    'log_failures' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -79,8 +79,7 @@ return [
 
         'ipfinder' => [
             'class' => \Torann\GeoIP\Services\IPFinder::class,
-            'key' => '0fa1428dfeed1e968f91f68c4a80c356',
-    // env('IPFINDER_API_KEY'),
+            'key' => env('IPFINDER_API_KEY'),
             'secure' => true,
             'locales' => ['en'],
         ],
