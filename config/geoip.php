@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'log_failures' => false,
+    'log_failures' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -73,7 +73,7 @@ return [
 
         'ipdata' => [
             'class' => \Torann\GeoIP\Services\IPData::class,
-            'key' => env('IPDATA_API_KEY'),
+            'key' => 'b2c15169975c6ec653ea8d2ab6228d5d534b4b19409c829ca16ef998',
             'secure' => true,
         ],
 
