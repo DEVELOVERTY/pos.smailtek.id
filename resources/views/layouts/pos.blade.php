@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/bootstrap-icons/bootstrap-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/pos.css') }}">
-    <link rel="shortcut icon" href="{{ asset('assets/images/icon.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assets/images/logo.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('assets/vendors/fontawesome/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/toastr/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/select3/dist/css/select2.min.css') }}" />
