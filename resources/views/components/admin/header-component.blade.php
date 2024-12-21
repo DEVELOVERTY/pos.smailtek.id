@@ -6,7 +6,7 @@
             <div class="navbar-brand-box">
                 <a href="{{ route('index') }}" class="logo logo-light mb-2">
                     <span class="logo-sm">
-                        <img src="{{asset('assets/images/icon.png')}}" alt="" height="22">
+                        <img src="{{ asset($settings->logo) }}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
                         <img src="{{ asset($settings->logo) }}" class="mt-4" alt="" style="width: 65%;">
