@@ -1302,7 +1302,7 @@ async function checkverifikasiTransaction() {
     });
     response = await response.json();
 
-    if (response.data && saveButton.disabled) {
+    if (response.data) {
         $('#savepay').show();
         clearInterval(fingerprintCheckTimer);
     }
