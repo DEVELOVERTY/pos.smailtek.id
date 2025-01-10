@@ -303,13 +303,21 @@ class SellController extends Controller
 
         
         if($request->barcode_rfid_sidik){
+            $id_usercard = $request->id_usercard;
+
+            $penjualan = [
+                'id_usercard' => $id_usercard,
+                'total_harga' => $data->final_total,
+                'produk' => $sell_send_to_sidik_callback
+            ];
+
             $res = Http::withHeaders([
                 "Content-Type" => "application/json",
                 "Accept" => "application/json, text-plain, */*",
                 "X-Requested-With" => "XMLHttpRequest",
             ])
                 ->post('https://admin.sidikty.com/api/transaction-paid', [
-                    'penjualan' => $sell_send_to_sidik_callback,
+                    'penjualan' => $penjualan,
                     'token_mart' => $kode,
                 ])
                 ->json();
