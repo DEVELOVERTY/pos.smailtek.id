@@ -676,6 +676,7 @@ $("#sidik").on("click", function (e) {
     $("#card").removeClass("active");
     $("#cash").removeClass("active");
     $(".non-sidik").hide();
+    payfull();
     var form = `<div class="col-12">
                     <table class="table">
                         <tr>
