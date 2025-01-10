@@ -22,9 +22,9 @@ class UserController extends Controller
             "Accept" => "application/json, text-plain, */*",
             "X-Requested-With" => "XMLHttpRequest",
         ])
-            ->get('https://admin.sidikty.com/api/api/user-card/' . $userId . '/fingerprint')
+            ->get('https://admin.sidikty.com/api/user-card/' . $userId . '/fingerprint')
             ->json();
-        echo $userId . "," . $barcode . "," . $transactionCode .';' . $res['data'] . ";SecurityKey;" . $time_limit_ver . ";" . route('user.process-verify-fingerprint') . ";" . env('API_SIDIK') . "/device-ac-sn-by-vc;extraParams";
+        echo $userId . "," . $barcode . "," . $transactionCode .';' . $res['data'] . ";SecurityKey;" . $time_limit_ver . ";" . route('user.process-verify-fingerprint') . ";" . "https://admin.sidikty.com/api/" . "/device-ac-sn-by-vc;extraParams";
     }
 
     public function processVerifyFingerprint()
