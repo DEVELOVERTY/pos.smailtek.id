@@ -16,7 +16,6 @@ class ProductSheet implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         return new Product([
-            'id'            => $row['id'],
             'name'          => $row['product_name'],
             'sku'           => $row['sku'],
             'barcode_type'  => $row['barcode_type'],
