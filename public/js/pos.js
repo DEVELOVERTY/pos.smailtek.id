@@ -1170,7 +1170,7 @@ function proses_sidik() {
 
 
 
-const apiDomain = "http://admin.sidikty.com/api";
+const apiDomain = "https://admin.sidikty.com/api";
 const posDomain = window.location.protocol + "//" + window.location.hostname;
 var transactionCode = null;
 var _token = document.querySelector('meta[name="csrf-token"]').getAttribute('content') || $('meta[name="csrf-token"]').attr('content');
