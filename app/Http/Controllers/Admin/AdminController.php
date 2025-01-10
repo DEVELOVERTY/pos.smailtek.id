@@ -21,17 +21,17 @@ class AdminController extends Controller
     public function index()
     {
         $data = [
-            'total_purchase'    => Transaction::where('type', 'purchase')->sum('final_total'),
-            'total_sell'        => Transaction::where('type', 'sell')->sum('final_total'),
-            'total_due'         => Transaction::where('type', 'sell')->where('status', 'due')->sum("final_total"),
+            'total_purchase'    => Transaction::where('type', 'purchase')->whereNotNull('deleted_at')->sum('final_total'),
+            'total_sell'        => Transaction::where('type', 'sell')->whereNotNull('deleted_at')->sum('final_total'),
+            'total_due'         => Transaction::where('type', 'sell')->where('status', 'due')->whereNotNull('deleted_at')->sum("final_total"),
             'total_expense'           => Expense::sum('amount'),
 
-            'act_sell'          => Transaction::where('type', 'sell')->orderBy('id', 'desc')->limit(10)->get(),
-            'act_purchase'      => Transaction::where('type', 'purchase')->orderBy('id', 'desc')->limit(10)->get(),
-            'act_stransfer'     => Transaction::where('type', 'stock_transfer')->orderBy('id', 'desc')->limit(10)->get(),
-            'act_sadjustment'   => Transaction::where('type', 'stock_adjustment')->orderBy('id', 'desc')->limit(10)->get(),
-            'act_return'        => Transaction::where('type', 'purchase_return')->orderBy('id', 'desc')->limit(10)->get(),
-            'act_returnsell'    => Transaction::where("type","sales_return")->orderBy("id","desc")->limit(10)->get(),
+            'act_sell'          => Transaction::where('type', 'sell')->orderBy('id', 'desc')->whereNotNull('deleted_at')->limit(10)->get(),
+            'act_purchase'      => Transaction::where('type', 'purchase')->orderBy('id', 'desc')->whereNotNull('deleted_at')->limit(10)->get(),
+            'act_stransfer'     => Transaction::where('type', 'stock_transfer')->orderBy('id', 'desc')->whereNotNull('deleted_at')->limit(10)->get(),
+            'act_sadjustment'   => Transaction::where('type', 'stock_adjustment')->orderBy('id', 'desc')->whereNotNull('deleted_at')->limit(10)->get(),
+            'act_return'        => Transaction::where('type', 'purchase_return')->orderBy('id', 'desc')->whereNotNull('deleted_at')->limit(10)->get(),
+            'act_returnsell'    => Transaction::where("type","sales_return")->orderBy("id","desc")->whereNotNull('deleted_at')->limit(10)->get(),
             'attendance'        => Attendance::where('date', date('Y-m-d'))->where('user_id', Auth()->user()->id)->first()
         ];
         //dd($data);
@@ -45,6 +45,7 @@ class AdminController extends Controller
             ->join('sell_purchases as sp', 's.id', '=', 'sp.sell_id')
             ->join('purchases as pp', 'sp.purchase_id', '=', 'pp.id')
             ->selectRaw("SUM((s.qty * s.unit_price) - (s.qty * pp.purchase_price)) AS jumlah")
+            ->whereNotNull('transactions.deleted_at')
             ->get();
         $data['expense']    = Expense::selectRaw("sum(amount) as jumlah")->get();
         $data['income']     = $jumlah;
@@ -53,11 +54,11 @@ class AdminController extends Controller
 
     public function transactionData()
     {
-        $data['sell']               = Transaction::selectRaw("sum(final_total) as jumlah")->where("type","sell")->where("payment_status","paid")->get();
-        $data['purchase']           = Transaction::selectRaw("sum(final_total) as jumlah")->where("type","purchase")->where("payment_status","paid")->get();
-        $data['purchase_return']    = Transaction::selectRaw("sum(final_total) as jumlah")->where("type","purchase_return")->get();
-        $data['adjustment']         = Transaction::selectRaw("sum(final_total) as jumlah")->where("type","stock_adjustment")->get();
-        $data['transfer']           = Transaction::selectRaw("sum(final_total) as jumlah")->where("type","stock_transfer")->get();
+        $data['sell']               = Transaction::selectRaw("sum(final_total) as jumlah")->where("type","sell")->where("payment_status","paid")->whereNotNull('deleted_at')->get();
+        $data['purchase']           = Transaction::selectRaw("sum(final_total) as jumlah")->where("type","purchase")->where("payment_status","paid")->whereNotNull('deleted_at')->get();
+        $data['purchase_return']    = Transaction::selectRaw("sum(final_total) as jumlah")->where("type","purchase_return")->whereNotNull('deleted_at')->get();
+        $data['adjustment']         = Transaction::selectRaw("sum(final_total) as jumlah")->where("type","stock_adjustment")->whereNotNull('deleted_at')->get();
+        $data['transfer']           = Transaction::selectRaw("sum(final_total) as jumlah")->where("type","stock_transfer")->whereNotNull('deleted_at')->get();
         return response()->json($data);
     }
 
