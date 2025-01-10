@@ -34,8 +34,8 @@ class UserController extends Controller
         $barcode = explode(',', $data[0])[1];
         $transactionCode = explode(',', $data[0])[2];
         $vStamp = $data[1];
-        $time = $data[2];
-        $sn = $data[3];
+        $time = $data[3];
+        $sn = $data[4];
 
         $res = Http::withHeaders([
             "Content-Type" => "application/json",
