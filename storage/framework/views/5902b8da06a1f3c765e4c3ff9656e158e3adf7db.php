@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full payment_modal" role="document">
         <div class="modal-content" style="height: 90vh;">
             <div class="modal-header header-modal" style="height: 5vh;">
-                <h5 class="modal-title text-white" id="">{{__('pos.payment')}}</h5>
+                <h5 class="modal-title text-white" id=""><?php echo e(__('pos.payment')); ?></h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <i class="fa fa-times text-white"></i>
                 </button>
@@ -64,13 +64,13 @@
                         <td>
                             <button type="button" id="holdbutton" class="non-sidik btn btn-lg btn-block btn-danger">
                                 <i class="bx bx-x d-block d-sm-none"></i>
-                                <span class="d-none d-sm-block"><i class="far fa-hand-paper"></i> {{__('pos.hold')}}</span>
+                                <span class="d-none d-sm-block"><i class="far fa-hand-paper"></i> <?php echo e(__('pos.hold')); ?></span>
                             </button>
                             <div id="holdinput" class="d-none"></div>
                         </td>
                         <td>
                             <button type="submit" class="non-sidik btn btn-lg btn-block btn-primary ml-1" id="savepay">
-                                <span class="d-none d-sm-block"><i class="fas fa-money-bill-alt"></i> {{__('pos.pay')}} </span>
+                                <span class="d-none d-sm-block"><i class="fas fa-money-bill-alt"></i> <?php echo e(__('pos.pay')); ?> </span>
                             </button>
                         </td>
                     </tr>
@@ -105,43 +105,40 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header header-modal" style="height: 7vh;">
-                <h4 class="modal-title text-white" id="myModalLabel33">{{__('sidebar.add_customer')}}</h4>
+                <h4 class="modal-title text-white" id="myModalLabel33"><?php echo e(__('sidebar.add_customer')); ?></h4>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <i class="fa fa-times text-white"></i>
                 </button>
             </div>
             <form id="cCustomer" method="POST">
-                @csrf
+                <?php echo csrf_field(); ?>
                 <div class="modal-body">
-                    <label>{{__('customer.name')}} * </label>
+                    <label><?php echo e(__('customer.name')); ?> * </label>
                     <div class="form-group">
                         <input type="text" name="name" id="name" class="form-control">
                     </div>
-                    <label>{{__('general.phone')}} </label>
+                    <label><?php echo e(__('general.phone')); ?> </label>
                     <div class="form-group">
                         <input type="number" name="phone" class="form-control">
                     </div>
-                    <label>{{__('general.email')}} </label>
+                    <label><?php echo e(__('general.email')); ?> </label>
                     <div class="form-group">
                         <input type="email" name="email" class="form-control">
                     </div>
-                    <label>{{__('general.code')}} </label>
+                    <label><?php echo e(__('general.code')); ?> </label>
                     <div class="form-group">
                         <input type="text" name="code" class="form-control">
                     </div>
-                    <label>{{__('general.city')}} </label>
+                    <label><?php echo e(__('general.city')); ?> </label>
                     <div class="form-group">
                         <input type="text" name="city" class="form-control">
                     </div>
-                    {{-- <label>State </label>
-                   <div class="form-group">
-                       <input type="text" name="state" placeholder="State" class="form-control">
-                   </div> --}}
-                    <label>{{__('general.address')}} </label>
+                    
+                    <label><?php echo e(__('general.address')); ?> </label>
                     <div class="form-group">
                         <textarea class="form-control" name="address" id="address"></textarea>
                     </div>
-                    <label>{{__('general.detail')}} </label>
+                    <label><?php echo e(__('general.detail')); ?> </label>
                     <div class="form-group">
                         <textarea class="form-control" name="detail" id="detail"></textarea>
                     </div>
@@ -149,7 +146,7 @@
                 <div class="modal-footer">
                     <a href="javascript:void(0)" id="saveCustomer" class="btn btn-lg btn-block btn-rounded btn-primary ml-1">
                         <i class="bx bx-check d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">{{__('sidebar.add_customer')}}</span>
+                        <span class="d-none d-sm-block"><?php echo e(__('sidebar.add_customer')); ?></span>
                     </a>
                 </div>
             </form>
@@ -161,7 +158,7 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full hold_modal" role="document">
         <div class="modal-content" style="height: 90vh">
             <div class="modal-header header-modal" style="height: 5vh;">
-                <h5 class="modal-title text-white" id="">{{__('pos.hold_transac')}}</h5>
+                <h5 class="modal-title text-white" id=""><?php echo e(__('pos.hold_transac')); ?></h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <i data-feather="x"></i>
                 </button>
@@ -173,9 +170,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-lg btn-block btn-rounded btn-light-secondary" data-bs-dismiss="modal">
-                    <span class="d-none d-sm-block">{{__('general.close')}}</span>
+                    <span class="d-none d-sm-block"><?php echo e(__('general.close')); ?></span>
                 </button>
             </div>
         </div>
     </div>
 </div>
+<?php /**PATH C:\laragon\www\tymart\resources\views/components/pos/footer-component.blade.php ENDPATH**/ ?>

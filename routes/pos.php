@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Sidik\UserController;
 use App\Http\Controllers\Pos\PosController;
 use App\Http\Controllers\Transaction\SellController;
 use Illuminate\Support\Facades\Route;
@@ -17,4 +18,9 @@ Route::middleware(['auth','store'])->group(function () {
         Route::get('get-bill/{id}',[PosController::class,'getbill']);
         Route::get('delete-bill/{id}',[PosController::class,'deleteBill']);
     });
+
+    // verify
+    Route::get('user/{userId}/verify-fingerprint/{barcode}/transaction/{transactionCode}', [UserController::class, 'verifyFingerprint'])->name('user.verify-fingerprint');
+    Route::post('user/verify-fingerprint', [UserController::class, 'processVerifyFingerprint'])->name('user.process-verify-fingerprint');
+
 });

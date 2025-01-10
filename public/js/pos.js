@@ -1,5 +1,3 @@
-// Lang
-
 moment.lang("id");
 
 $(".select2").select2({
@@ -523,6 +521,14 @@ $("body").on("click", "#pay_shop", function () {
     paymodal = $(this).closest("body");
     $("#on_due").val(paymodal.find("#fixTotal").html());
     document.getElementById("pay_modal_click").click();
+    $(".non-sidik").show();
+    $("#sidik").removeClass("active");
+    $("#bank").removeClass("active");
+    $("#cash").addClass("active");
+    $("#card").removeClass("active");
+    $("#paymentprocess").html("");
+
+
 });
 
 $(".payment_modal").on("keyup", "#on_pay", function () {
@@ -613,6 +619,9 @@ $("#bank").on("click", function (e) {
     $("#bank").addClass("active");
     $("#cash").removeClass("active");
     $("#card").removeClass("active");
+    $("#sidik").removeClass("active");
+    $(".non-sidik").show();
+
 
     var url = domainpath + "/pos-admin/system/get-bank/";
     $.ajax({
@@ -661,10 +670,48 @@ $("#bank").on("click", function (e) {
     });
 });
 
+$("#sidik").on("click", function (e) {
+    $("#bank").removeClass("active");
+    $("#sidik").addClass("active");
+    $("#card").removeClass("active");
+    $("#cash").removeClass("active");
+    $(".non-sidik").hide();
+    var form = `<div class="col-12">
+                    <table class="table">
+                        <tr>
+                            <th>
+                                <label>Barcode/RFID Sidik</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    <input type="text" class="form-control" id="barcode_rfid_sidik" name="barcode_rfid_sidik">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button" onclick="proses_sidik()"><i class="fas fa-arrow-right"></i></button>
+                                    </div>
+                                </div>
+                            </th>
+                            <th>
+                                <label>Nama User</label>
+                                <input type="hidden" id="id_usercard" name="id_usercard">
+                                <input type="text" class="form-control" id="namaUser" name="namaUser" readonly>
+                            </th>
+                            <th>
+                                <label>Saldo</label>
+                                <input type="text" class="form-control" id="saldo" name="saldo" readonly>
+                            </th>
+
+                        </tr>
+                    </table>
+                </div>`;
+    $("#paymentprocess").html(form);
+});
+
+
 $("#card").on("click", function (e) {
     $("#bank").removeClass("active");
     $("#cash").removeClass("active");
     $("#card").addClass("active");
+    $("#sidik").removeClass("active");
+    $(".non-sidik").show();
 
     var form = `<div class="col-12 mt-3">
                     <table class="table">
@@ -710,6 +757,8 @@ $("#card").on("click", function (e) {
 });
 
 $("#cash").on("click", function (e) {
+    $(".non-sidik").show();
+    $("#sidik").removeClass("active");
     $("#bank").removeClass("active");
     $("#cash").addClass("active");
     $("#card").removeClass("active");
@@ -1112,4 +1161,146 @@ function playSound(filename) {
         '.mp3">';
     document.getElementById("sound").innerHTML =
         '<audio autoplay="autoplay">' + mp3Source + embedSource + "</audio>";
+}
+
+function proses_sidik() {
+    var barcode = $("#barcode_rfid_sidik").val();
+    isBarcodeValid(barcode);
+}
+
+
+
+const apiDomain = "http://admin.sidikty.com/api";
+const posDomain = window.location.protocol + "//" + window.location.hostname;
+var transactionCode = null;
+var _token = document.querySelector('meta[name="csrf-token"]').getAttribute('content') || $('meta[name="csrf-token"]').attr('content');
+var namaUser, saldo, id_usercard;
+
+async function isBarcodeValid(barcode) {
+    $.ajax({
+        url: `${apiDomain}/is-barcode-valid`,
+        type: 'POST',
+        contentType: 'application/json',
+        headers: {
+            "Accept": "application/json, text-plain, */*",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content')
+        },
+        data: JSON.stringify({
+            'barcode': barcode,
+        }),
+        success: function(response) {
+            if (response.data.userCardId != null) {
+                namaUser = response.data.namaUser;
+                saldo = response.data.saldo;
+                id_usercard = response.data.userCardId;
+                $('#namaUser').val(namaUser);
+                $('#saldo').val(saldo);
+                $('#id_usercard').val(id_usercard);
+
+                let validasi = isValidasi(response.data.userCardId);
+                validasi.then((validasi) => {
+                    if(validasi.status  === 'Belum Lunas'){
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Ada tagihan belum lunas',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            $('#barcode_rfid_sidik').val('');
+                            $('#namaUser').val('');
+                            $('#saldo').val('');
+                            $('#id_usercard').val('');
+                        });
+                    } else if(validasi.sisa_limit < total && validasi.sisa_limit !== null){
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Limit harian belanja tidak cukup',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            $('#barcode_rfid_sidik').val('');
+                            $('#namaUser').val('');
+                            $('#saldo').val('');
+                            $('#id_usercard').val('');
+                        });
+                    } else if(response.data.saldo < total){
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Saldo tidak cukup',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            $('#barcode_rfid_sidik').val('');
+                            $('#namaUser').val('');
+                            $('#saldo').val('');
+                            $('#id_usercard').val('');
+                        });
+                    } else {
+                        transactionCode = new Date().toISOString().replace(/[-:.TZ]/g, '')+""+response.userCardId;
+                        if(response.fingerprints !== null && transactionCode !== null){
+                            window.location.href = 'finspot:FingerspotVer;'+btoa(posDomain+"/"+response.userCardId+'/verify-fingerprint/'+barcode+'/transaction/'+transactionCode);
+                            verifikasiTransaction();
+                        }
+                    }        
+                });
+                
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Barcode salah',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                $('#barcode_rfid_sidik').val('');
+            }
+        }
+    });
+}
+
+async function isValidasi(id_user_card) {
+    let response = await fetch(`${apiDomain}/is-validasi`, {
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json, text-plain, */*",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": _token
+        },
+        method: 'POST',
+        body: JSON.stringify({
+            'id_user_card': id_user_card,
+        })
+    });
+    response = await response.json();
+
+    return response.data;
+
+}
+
+
+let fingerprintCheckTimer = null;
+
+async function verifikasiTransaction() {
+    fingerprintCheckTimer = setInterval(checkverifikasiTransaction, 2000);   
+}
+
+async function checkverifikasiTransaction() {
+    let response = await fetch(`${posDomain}/api/is-transaction-fingerprint-verified/`, {
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json, text-plain, */*",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": _token
+        },
+        params: {
+            'transaction_code': transactionCode,
+        },
+        method: 'GET',
+    });
+    response = await response.json();
+
+    if (response.data && saveButton.disabled) {
+        $('#savepay').show();
+        clearInterval(fingerprintCheckTimer);
+    }
 }

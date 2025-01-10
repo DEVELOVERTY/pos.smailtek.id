@@ -17,18 +17,22 @@ class SecondSheetCategoryImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
 
-        if ($row['parent_id'] == null || $row['subcategory_name'] == null) {
+        if ($row['category_code'] == null || $row['subcategory_name'] == null) {
             Validator::make($row, [ 
                 'subcategory_name'  => 'required',
                 'parent_id' => 'required'
             ])->validate();
         }
 
-        return new Category([
-            'id'        => $row['id'],
-            'name'      => $row['subcategory_name'],
-            'is_root_parent'    => 0,
-            'parent_id' => $row['category_id']
-        ]);
+        $category = Category::where('kd_category', $row['category_code'])->first();
+        if (!$category->count() > 0) {
+            return null;
+        }else{
+            return new Category([
+                'name'      => $row['subcategory_name'],
+                'is_root_parent'    => 0,
+                'parent_id' => $category->id
+            ]);
+        }
     }
 }

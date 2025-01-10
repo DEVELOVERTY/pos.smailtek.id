@@ -57,11 +57,13 @@ class CategoryController extends Controller
     public function store(Request $request, $condition)
     {
         $this->validate($request, [
+            'kd_category' => 'required',
             'name'      => 'required',
             'image'     => 'mimes:jpg,jpeg,png'
         ]);
 
         $condition == 'create' ? $data = new Category : $data = Category::findOrFail($request->id);
+        $data->kd_category    = $request->kd_category;
         $data->name    = $request->name;
         $request->image ? $data->image = $this->uploadImage($request, 'image', 'category') : null;
         $request->detail ? $data->detail = $request->detail : null;

@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Api\Pos\PosController;
 use App\Http\Controllers\Api\RestController;
+use App\Http\Controllers\Api\Sidik\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +25,8 @@ Route::prefix('transaction')->group(function() {
     Route::get("/get-invoice/{id}",[RestController::class,'getInvoice']);
     Route::get('print-invoice-rest/{id}',[RestController::class,'printInvoice'])->name('print-invoice-rest');
 });
+
+Route::get('is-transaction-fingerprint-verified', [TransactionController::class, 'isTransactionFingerprintVerified']);
 
 
 

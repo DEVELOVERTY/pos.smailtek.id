@@ -22,8 +22,9 @@ class SheetCategoryImport implements ToModel, WithHeadingRow
             ])->validate();
         }
 
+        
         return new Category([
-            'id'        => $row['id'],
+            'kd_category' => $row['category_code'],
             'name'      => $row['category_name'],
             'is_root_parent'    => 1,
         ]);

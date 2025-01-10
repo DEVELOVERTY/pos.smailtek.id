@@ -37,12 +37,22 @@
                                 <div class="form-body">
                                     <div class="row mb-3">
                                         <div class="col-md-4">
+                                            <label>Code*</label>
+                                        </div>
+                                        <div class="col-md-8 form-group">
+                                            <input type="text" class="form-control" name="kd_category" value="{{ old('kd_category') }}" id="kd_category" required placeholder="Code">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
                                             <label>{{__('category.category_name')}}*</label>
                                         </div>
                                         <div class="col-md-8 form-group">
                                             <input type="text" class="form-control" name="name" value="{{ old('name') }}" id="name" required placeholder="{{__('category.category_name')}} ">
                                         </div>
                                     </div>
+
                                     <div class="row mb-3">
                                         <div class="col-md-4">
                                             <label>{{__('general.detail')}}</label>

@@ -38,6 +38,8 @@
                                     <thead>
                                         <tr>
                                             <th style="width:70px;text-align: center;"><span class="fa fa-image"></span></th>
+                                            <th>ID</th>
+                                            <th>Code</th>
                                             <th>{{ __('category.category_name') }}</th>
                                             <th>{{ __('category.total_product') }}</th>
                                             <th>{{ __('category.total_subcategory') }}</th>
@@ -52,6 +54,8 @@
                                                     <img width="50px" src="{{ asset($c->image) }}">
                                                 </a>
                                             </td>
+                                            <td>{{ $c->id }}</td>
+                                            <td>{{ $c->kd_category }}</td>
                                             <td>
                                                 {{ $c->name }}
                                             </td>

@@ -19,6 +19,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 
 class SellController extends Controller
@@ -148,6 +149,10 @@ class SellController extends Controller
             $data = new Transaction();
         }
 
+
+        $store = Store::findOrFail(Session::get('mystore'));
+        $kode = $store->code;
+
         $data->store_id = Session::get('mystore');
         $data->type     = 'sell';
 
@@ -210,7 +215,11 @@ class SellController extends Controller
             $request->card_security ? $payment->card_security = $request->card_security : null;
             $payment->method            = 'card';
             $methodpay = 'Kartu Kredit';
-        } else {
+        } if ($request->barcode_rfid_sidik) {
+            $request->barcode_rfid_sidik ? $payment->barcode_rfid_sidik = $request->barcode_rfid_sidik : null;
+            $payment->method = 'SiDiK';
+            $methodpay = 'Kartu SiDiK';
+        }else {
             $payment->method            = 'cash';
             $methodpay = 'Bayar Cash';
         }
@@ -243,6 +252,15 @@ class SellController extends Controller
                 'subtotal' => number_format(Helper::fresh_aprice($request->subtotal[$x]))
             );
             array_push($sell_callback, $list_sell);
+
+            $list_sell_produk_send_to_sidik = array(
+                'nama_produk' => $sell->product->name,
+                'jumlah' => $sell->qty,
+                'harga_jual' => $sell->unit_price,
+                'subtotal' => $request->subtotal[$x]
+            );
+            array_push($sell_send_to_sidik_callback, $list_sell_produk_send_to_sidik);
+
 
             $sellpurchase = new SellPurchase();
             $sellpurchase->sell_id  = $sell->id;
@@ -280,6 +298,21 @@ class SellController extends Controller
             $stock                      = Stock::where('product_id', $sell->product_id)->where('variation_id', $sell->variation_id)->where('store_id', $data->store_id)->first();
             $stock->qty_available       = $stock->qty_available - $sell->qty;
             $stock->save();
+
+            if($request->barcode_rfid_sidik){
+                $res = Http::withHeaders([
+                    "Content-Type" => "application/json",
+                    "Accept" => "application/json, text-plain, */*",
+                    "X-Requested-With" => "XMLHttpRequest",
+                ])
+                    ->post('https://admin.sidikty.com/api/transaction-paid', [
+                        'penjualan' => $sell_send_to_sidik_callback,
+                        'token_mart' => $kode,
+                    ])
+                    ->json();
+            }
+
+
         }
 
         return response()->json([

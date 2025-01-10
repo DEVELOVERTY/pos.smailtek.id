@@ -33,7 +33,7 @@
                                 <table class="table table-striped" id="table-1">
                                     <thead>
                                         <tr>
-                                            <th class="text-center"> No </th>
+                                            <th class="text-center"> ID </th>
                                             <th>{{__('settings.unit_name')}}</th>
                                             <th>{{__('general.code')}}</th>
                                             <th>{{__('general.detail')}}</th>
@@ -46,7 +46,8 @@
                                         @endphp
                                         @foreach($data as $d)
                                         <tr>
-                                            <td>{{$no++}} </td>
+                                            <td class="text-center"> {{$d->id}} </td>
+                                            {{-- <td>{{$no++}} </td> --}}
                                             <td> {{$d->name}} </td>
                                             <td> {{$d->code}} </td>
                                             <td> {{$d->detail}} </td>

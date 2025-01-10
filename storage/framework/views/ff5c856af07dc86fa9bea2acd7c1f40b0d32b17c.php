@@ -1,0 +1,23 @@
+<input type="hidden" id="are_you_sure" value="<?php echo e(__('alert.are_you_sure')); ?>">
+<input type="hidden" id="delete_warning" value="<?php echo e(__('alert.delete_warning')); ?>">
+<input type="hidden" id="yes_sure" value="<?php echo e(__('alert.yes_sure')); ?>">
+<input type="hidden" id="success" value="<?php echo e(__('alert.success')); ?>">
+<input type="hidden" id="error" value="<?php echo e(__('alert.error')); ?>">
+<input type="hidden" id="internet_connected" value="<?php echo e(__('alert.internet_connected')); ?>">
+<input type="hidden" id="offline_internet" value="<?php echo e(__('alert.offline_internet')); ?>">
+<input type="hidden" id="try_again" value="<?php echo e(__('alert.try_again')); ?>">
+<input type="hidden" id="close_lang" value="<?php echo e(__('general.close')); ?>">
+<input type="hidden" id="product_sisa" value="<?php echo e(__('alert.product_sisa')); ?>">
+<input type="hidden" id="billing_empty" value="<?php echo e(__('alert.billing_empty')); ?>">
+<input type="hidden" id="due_total" value="<?php echo e(__('sell.due_total')); ?>">
+<input type="hidden" id="change_total" value="<?php echo e(__('sell.change_total')); ?>">
+<input type="hidden" id="date_lang" value="<?php echo e(__('general.date')); ?>">
+<input type="hidden" id="subtotal_lang" value="<?php echo e(__('general.subtotal')); ?>">
+<input type="hidden" id="discount_lang" value="<?php echo e(__('general.discount')); ?>">
+<input type="hidden" id="tax_lang" value="<?php echo e(__('general.tax')); ?>">
+<input type="hidden" id="shipping_lang" value="<?php echo e(__('purchase.shipping_cost')); ?>">
+<input type="hidden" id="other_lang" value="<?php echo e(__('purchase.other_payment')); ?>">
+<input type="hidden" id="total_lang" value="<?php echo e(__('general.total')); ?>">
+<input type="hidden" id="payment_lang" value="<?php echo e(__('general.payment_total')); ?>">
+<input type="hidden" id="method_lang" value="<?php echo e(__('general.payment_method')); ?>">
+<input type="hidden" id="hold_lang" value="<?php echo e(__('pos.hold')); ?>"><?php /**PATH C:\laragon\www\tymart\resources\views/components/admin/lang-component.blade.php ENDPATH**/ ?>
