@@ -285,7 +285,11 @@ function addCart(id) {
         success: function (data) {
             var addCart = "";
             var listProduct = "";
+            var stok = 0;
+            var angka = 0;
             $.each(data.product, function (index, value) {
+                angka = parseInt(value.stock);
+                stok = parseInt(angka.replace(/,/g, ''));
                 if (
                     $("#cartProduct")
                         .find("#cart" + value.id)
