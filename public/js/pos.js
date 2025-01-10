@@ -1175,7 +1175,7 @@ const apiDomain = "https://admin.sidikty.com/api";
 const posDomain = window.location.protocol + "//" + window.location.hostname;
 var transactionCode = null;
 var _token = document.querySelector('meta[name="csrf-token"]').getAttribute('content') || $('meta[name="csrf-token"]').attr('content');
-var namaUser, saldo, id_usercard;
+var namaUser, saldo, id_usercard, onPay;
 
 async function isBarcodeValid(barcode) {
     $.ajax({
@@ -1195,6 +1195,8 @@ async function isBarcodeValid(barcode) {
                 namaUser = response.data.namaUser;
                 saldo = response.data.saldo;
                 id_usercard = response.data.userCardId;
+                onPay = document.getElementById('on_pay');
+
                 $('#namaUser').val(namaUser);
                 $('#saldo').val(saldo);
                 $('#id_usercard').val(id_usercard);
@@ -1213,7 +1215,7 @@ async function isBarcodeValid(barcode) {
                             $('#saldo').val('');
                             $('#id_usercard').val('');
                         });
-                    } else if(validasi.sisa_limit < total && validasi.sisa_limit !== null){
+                    if(validasi.sisa_limit < onPay && validasi.sisa_limit !== null){
                         Swal.fire({
                             title: 'Error',
                             text: 'Limit harian belanja tidak cukup',
@@ -1225,7 +1227,7 @@ async function isBarcodeValid(barcode) {
                             $('#saldo').val('');
                             $('#id_usercard').val('');
                         });
-                    } else if(response.data.saldo < total){
+                    } else if(response.data.saldo < onPay){
                         Swal.fire({
                             title: 'Error',
                             text: 'Saldo tidak cukup',
