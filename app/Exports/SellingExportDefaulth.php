@@ -15,7 +15,7 @@ class SellingExportDefaulth implements FromView
 
     public function view(): View
     {
-        $data = Transaction::where('type', 'sell')->where("status", "!=", "hold")->where("type", "sell")->orderBy("id", "desc")->get();
+        $data = Transaction::join('transaction_payments', 'transactions.id', '=', 'transaction_payments.transaction_id')->where('type', 'sell')->where("status", "!=", "hold")->where("type", "sell")->orderBy("transactions.id", "desc")->get();
         $status = [
             'due'   => __('general.sell_due'),
             "paid"  => __('general.paid'),

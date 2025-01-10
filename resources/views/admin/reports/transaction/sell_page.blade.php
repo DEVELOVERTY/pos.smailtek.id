@@ -12,6 +12,7 @@
                 <th>{{__('report.qty_sell')}}</th>
                 <th>{{__('hrm.amount_total')}}</th>
                 <th>{{__('general.pay_amount')}}</th>
+                <th>{{__('general.payment_method')}}</th>
                 <th>{{__('general.sell_due_amount')}}</th>
                 <th>{{__('report.profit_amount')}}</th>
                 <th>{{__('report.createdby')}}</th>
@@ -63,6 +64,7 @@
                 <td> <span class=" badge bg-primary text-white">0</span> </td>
                 <td> {{ number_format($d->final_total) }} </td>
                 <td> {{ $d->pay_total }} </td>
+                <td> {{ $d->method }} </td>
                 <td> {{ number_format($d->due_total ?? $d->final_total) }} </td>
                 <td> {{ number_format($d->profit) }} </td>
                 <td> {{ $d->createdby->name ?? '' }} </td>
@@ -74,6 +76,7 @@
             <tr style="background-color: #5cb85c; border: 1px solid white" class="text-white">
                 <th colspan="9" style="height: 100px; font-size:30px">{{__('report.total_income')}} : {{ number_format($jumlahProfit) }}</th>
                 <th>{{ number_format($jumlahTotal) }}</th>
+                <th></th>
                 <th>{{ number_format($jumlahTerbayar) }}</th>
                 <th>{{ number_format($jumlahHutang) }}</th>
                 <th></th>

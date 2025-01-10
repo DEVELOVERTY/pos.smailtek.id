@@ -13,6 +13,7 @@
             <th style="width: 20px; text-align:center">{{__('report.qty_sell')}}</th>
             <th style="width: 20px; text-align:center">{{__('hrm.amount_total')}}</th>
             <th style="width: 20px; text-align:center">{{__('general.pay_amount')}}</th>
+            <th style="width: 20px; text-align:center">{{__('general.payment_method')}}</th>
             <th style="width: 20px; text-align:center">{{__('general.sell_due_amount')}}</th>
             <th style="width: 20px; text-align:center">{{__('report.profit_amount')}}</th> 
             <th style="width: 20px; text-align:center">{{__('report.createdby')}}</th>
@@ -30,6 +31,7 @@
             <th style="text-align: center; background-color:#3c8dbc; color:white">10</th>
             <th style="text-align: center; background-color:#3c8dbc; color:white">11</th>
             <th style="text-align: center; background-color:#3c8dbc; color:white">12</th>
+            <th style="text-align: center; background-color:#3c8dbc; color:white">13</th>
         </tr>
     </thead>
     <tbody>
@@ -44,6 +46,7 @@
             <td style="text-align:left;"> {{ $d->qty_sell }}</td>
             <td style="text-align:right;"> {{ number_format($d->final_total) }} </td>
             <td style="text-align:right;"> {{ $d->pay_total }} </td>
+            <td style="text-align:left;"> {{ $d->method }} </td>
             <td style="text-align:right;"> {{ number_format($d->due_total ?? $d->final_total) }} </td>
             <td style="text-align:right;"> {{ number_format($d->profit) }} </td> 
             <td style="text-align:right;"> {{ $d->createdby->name ?? '' }} </td>
@@ -55,7 +58,9 @@
         <tr style="background-color: #5cb85c; border: 1px solid white" class="text-white">
             <th colspan="7" style="height: 30px; font-size:20px; background-color:#5cb85c; text-align:center;"><b>{{__('report.total_income')}} : {{ number_format($jumlahProfit) }}</b></th>
             <th style="text-align:right;"><b>{{ number_format($jumlahTotal) }}</b></th>
+           
             <th style="text-align:right;"><b>{{ number_format($jumlahTerbayar) }}</b></th>
+            <th style="text-align:right;"></th>
             <th style="text-align:right;"><b>{{ number_format($jumlahHutang) }}</b></th>
             <th></th>
             <th></th>
