@@ -312,7 +312,7 @@ function addCart(id) {
                         value.product_id +
                         `">
                         <input type="number" id="qty" name="qty[]" value="1" min="1" max="` +
-                        value.stock +
+                        parseInt(value.stock) +
                         `" class="form-control"> 
                     </td>
                     <td>` +
