@@ -286,6 +286,7 @@ function addCart(id) {
             var addCart = "";
             var listProduct = "";
             $.each(data.product, function (index, value) {
+                value.stock = value.stock.replace(/,/g, '')
                 if (
                     $("#cartProduct")
                         .find("#cart" + value.id)
@@ -312,7 +313,7 @@ function addCart(id) {
                         value.product_id +
                         `">
                         <input type="number" id="qty" name="qty[]" value="1" min="1" max="` +
-                        1000 +
+                        value.stock +
                         `" class="form-control"> 
                     </td>
                     <td>` +
