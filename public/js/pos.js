@@ -1240,10 +1240,10 @@ async function isBarcodeValid(barcode) {
                             $('#id_usercard').val('');
                         });
                     } else {
-                        transactionCode = new Date().toISOString().replace(/[-:.TZ]/g, '')+""+response.userCardId;
-                        if(response.fingerprints !== null && transactionCode !== null){
-                            alert(response.userCardId);
-                            window.location.href = 'finspot:FingerspotVer;'+btoa(posDomain+"/"+response.userCardId+'/verify-fingerprint/'+barcode+'/transaction/'+transactionCode);
+                        transactionCode = new Date().toISOString().replace(/[-:.TZ]/g, '')+""+response.data.userCardId;
+                        if(response.data.fingerprints !== null && transactionCode !== null){
+                            alert(response.data.userCardId);
+                            window.location.href = 'finspot:FingerspotVer;'+btoa(posDomain+"/"+response.data.userCardId+'/verify-fingerprint/'+barcode+'/transaction/'+transactionCode);
                             verifikasiTransaction();
                         }
                     }        
