@@ -299,20 +299,20 @@ class SellController extends Controller
             $stock->qty_available       = $stock->qty_available - $sell->qty;
             $stock->save();
 
-            if($request->barcode_rfid_sidik){
-                $res = Http::withHeaders([
-                    "Content-Type" => "application/json",
-                    "Accept" => "application/json, text-plain, */*",
-                    "X-Requested-With" => "XMLHttpRequest",
+        }
+
+        
+        if($request->barcode_rfid_sidik){
+            $res = Http::withHeaders([
+                "Content-Type" => "application/json",
+                "Accept" => "application/json, text-plain, */*",
+                "X-Requested-With" => "XMLHttpRequest",
+            ])
+                ->post('https://admin.sidikty.com/api/transaction-paid', [
+                    'penjualan' => $sell_send_to_sidik_callback,
+                    'token_mart' => $kode,
                 ])
-                    ->post('https://admin.sidikty.com/api/transaction-paid', [
-                        'penjualan' => $sell_send_to_sidik_callback,
-                        'token_mart' => $kode,
-                    ])
-                    ->json();
-            }
-
-
+                ->json();
         }
 
         return response()->json([
