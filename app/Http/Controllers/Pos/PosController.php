@@ -49,7 +49,7 @@ class PosController extends Controller
                     'price' => number_format($p->selling_price),
                     'image' => asset($p->gambar->path ?? '/uploads/image.jpg'),
                     'options' => null,
-                    'stock' => $getStock
+                    'stock' => (int) $getStock
                 );
                 array_push($product, $list);
             }
