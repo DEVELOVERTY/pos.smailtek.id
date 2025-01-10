@@ -65,7 +65,7 @@ class AdminController extends Controller
     public function sellmonth()
     {
         $data['selling'] = array();
-        $selling = Transaction::selectRaw('LEFT(created_at,10) as date, sum(final_total) as total')->where('type', 'sell')->whereYear('created_at', date('Y'))->groupBy('date')->limit(30)->get();
+        $selling = Transaction::selectRaw('LEFT(created_at,10) as date, sum(final_total) as total')->where('type', 'sell')->whereYear('created_at', date('Y'))->whereNotNull('deleted_at')->groupBy('date')->limit(30)->get();
         foreach ($selling as $sell) { 
             $list = [
                 'date'  => Carbon::parse($sell->date, "UTC")->setTimezone(auth()->user()->timezone)->format("d, M Y"),
