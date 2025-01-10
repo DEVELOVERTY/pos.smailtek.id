@@ -12,7 +12,7 @@ class TransactionController extends Controller
     {
         return [
             'status' => 'success',
-            'data' => LogFinger::where('transaction_code', request('transaction_code'))->where('finger', 'true')->first()->finger,
+            'data' => optional(LogFinger::where('transaction_code', request('transaction_code'))->where('finger', 'true')->first())->finger ?? false,
         ];
     }
 }
