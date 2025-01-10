@@ -684,7 +684,7 @@ $("#sidik").on("click", function (e) {
                                 <label>Barcode/RFID Sidik</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                    <input type="text" class="form-control" id="barcode_rfid_sidik" name="barcode_rfid_sidik">
+                                    <input type="text" class="form-control" id="barcode_rfid_sidik" autocomplete="off" name="barcode_rfid_sidik">
                                     <div class="input-group-append">
                                         <button class="btn btn-primary" type="button" onclick="proses_sidik()"><i class="fas fa-arrow-right"></i></button>
                                     </div>
