@@ -70,6 +70,7 @@
                                         <thead>
                                             <tr>
                                                 <th class="text-center"> No </th>
+                                                <th>ID</th>
                                                 <th>{{ __('general.image') }}</th>
                                                 <th>{{ __('produk.name') }}</th>
                                                 <th>{{ __('category.category_name') }}</th>
@@ -91,6 +92,7 @@
                                                 <td>
                                                     <img src="{{ asset($d->image) }}" style="width: 50px; border-radius: 10%">
                                                 </td>
+                                                <td> {{ $d->id }} </td>
                                                 <td> {{ $d->name }} </td>
                                                 <td> {{ $d->category->name ?? '' }} </td>
                                                 <td> {{ $d->price_sell_range }} </td>
