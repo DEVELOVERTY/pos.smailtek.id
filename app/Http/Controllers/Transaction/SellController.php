@@ -351,7 +351,7 @@ class SellController extends Controller
             ->where('type', 'sell')
             ->where("status", "!=", "hold")
             ->whereNotNull('transactions.deleted_at')
-            ->orderBy('id', 'desc')
+            ->orderBy('transactions.id', 'desc')
             ->get();
         $user = User::all();
         $store = Store::all();
