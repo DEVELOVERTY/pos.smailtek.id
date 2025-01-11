@@ -21,7 +21,7 @@ class VariantSheet implements ToModel, WithHeadingRow
         return new Variation(
            
             [
-            'id'        => $row['id'],
+            // 'id'        => $row['id'],
             'product_id'    => $row['product_id'],
             'sku'       => $row['sku'],
             'price_inc_tax' => $row['purchase_price'],
