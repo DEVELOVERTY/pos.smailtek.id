@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
-    public function verifyFingerprint($userId, $barcode, $transactionCode)
+    public function verifyFingerprint($userId, $transactionCode)
     {
         $time_limit_ver = 15;
         $res = Http::withHeaders([
@@ -24,18 +24,17 @@ class UserController extends Controller
         ])
             ->get('https://admin.sidikty.com/api/user-card/' . $userId . '/fingerprint')
             ->json();
-        echo $userId . "," . $barcode . "," . $transactionCode .';' . $res['data'] . ";SecurityKey;" . $time_limit_ver . ";" . route('user.process-verify-fingerprint') . ";" . "https://admin.sidikty.com/api/device-ac-sn-by-vc;extraParams";
-    }
+        echo $userId . "," . $transactionCode .';' . $res['data'] . ";SecurityKey;" . $time_limit_ver . ";" . route('user.process-verify-fingerprint') . ";" . "https://admin.sidikty.com/api/device-ac-sn-by-vc;extraParams";
+   }
 
     public function processVerifyFingerprint()
     {
         $data = explode(";", $_POST['VerPas']);
         $userId = explode(',', $data[0])[0];
-        $barcode = explode(',', $data[0])[1];
-        $transactionCode = explode(',', $data[0])[2];
+        $transactionCode = explode(',', $data[0])[1];
         $vStamp = $data[1];
-        $time = $data[3];
-        $sn = $data[4];
+        $time = $data[2];
+        $sn = $data[3];
 
         $res = Http::withHeaders([
             "Content-Type" => "application/json",
@@ -59,14 +58,14 @@ class UserController extends Controller
 
         $device = $res['data'];
         Log::debug($device);
-        $salt = md5($sn . $fingerprint . $device['vc'] . $time . $userId . ',' . $barcode . ',' . $transactionCode . $device['vkey']);
+        $salt = md5($sn . $fingerprint . $device['vc'] . $time . $userId . ',' . $transactionCode . $device['vkey']);
         if (strtoupper($vStamp) == strtoupper($salt)) {
             // Transaction::where('id', $barcode)->update([
             //     'is_fingerprint_verified' => true,
             // ]);
 
             LogFinger::create([
-                'barcode' => $barcode,
+                'barcode' => 'true',
                 'finger' => 'true',
                 'transaction_code' => $transactionCode,
                 'store_id' => Session::get('mystore')

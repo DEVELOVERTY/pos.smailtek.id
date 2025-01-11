@@ -1243,7 +1243,7 @@ async function isBarcodeValid(barcode) {
                     } else {
                         transactionCode = new Date().toISOString().replace(/[-:.TZ]/g, '')+""+response.data.userCardId;
                         if(response.data.fingerprints !== null && transactionCode !== null){
-                            window.location.href = 'finspot:FingerspotVer;'+btoa(posDomain+"/user/"+response.data.userCardId+'/verify-fingerprint/'+barcode+'/transaction/'+transactionCode);
+                            window.location.href = 'finspot:FingerspotVer;'+btoa(posDomain+"/user/"+response.data.userCardId+'/verify-fingerprint/'+transactionCode);
                             verifikasiTransaction();                      
                         }
                     }        
