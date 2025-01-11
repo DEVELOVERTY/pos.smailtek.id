@@ -81,7 +81,7 @@
         </div>
     </div>
 </div>
-</form>
+
 
 <div class="modal right fade" id="choosecustomer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
     <div class="modal-dialog" role="document">
