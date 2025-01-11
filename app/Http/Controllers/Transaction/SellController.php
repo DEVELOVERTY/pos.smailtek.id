@@ -344,13 +344,13 @@ class SellController extends Controller
         $data = Transaction::join('transaction_payments', 'transactions.id', '=', 'transaction_payments.transaction_id')
             ->where('type', 'sell')
             ->where("status", "!=", "hold")
-            ->whereNotNull('deleted_at')
+            ->whereNotNull('transactions.deleted_at')
             ->orderBy('transactions.id', 'desc')
             ->paginate(20);
         $our = Transaction::join('transaction_payments', 'transactions.id', '=', 'transaction_payments.transaction_id')
             ->where('type', 'sell')
             ->where("status", "!=", "hold")
-            ->whereNotNull('deleted_at')
+            ->whereNotNull('transactions.deleted_at')
             ->orderBy('id', 'desc')
             ->get();
         $user = User::all();
