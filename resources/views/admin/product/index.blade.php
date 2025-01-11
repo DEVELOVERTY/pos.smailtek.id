@@ -89,10 +89,11 @@
                                             @foreach ($data as $d)
                                             <tr>
                                                 <td>{{ $no++ }} </td>
+                                                <td> {{ $d->id }} </td>
                                                 <td>
                                                     <img src="{{ asset($d->image) }}" style="width: 50px; border-radius: 10%">
                                                 </td>
-                                                <td> {{ $d->id }} </td>
+                                               
                                                 <td> {{ $d->name }} </td>
                                                 <td> {{ $d->category->name ?? '' }} </td>
                                                 <td> {{ $d->price_sell_range }} </td>
