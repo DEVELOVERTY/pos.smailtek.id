@@ -56,7 +56,7 @@ class SellController extends Controller
             return $this->hold($request);
         } else {
             $validator = Validator::make($request->all(), [
-                'customer_id'       => 'required',
+                // 'customer_id'       => 'required',
                 "qty"    => "required|array|min:0",
                 "qty.*"  => "required|min:0",
 
@@ -226,6 +226,7 @@ class SellController extends Controller
 
         $payment->save();
         $sell_callback = array();
+        $sell_send_to_sidik_callback = array();
         $num = count($request->qty);
         for ($x = 0; $x < $num; $x++) {
             if (isset($request->bill[$x])) {
@@ -260,6 +261,14 @@ class SellController extends Controller
                 'subtotal' => $request->subtotal[$x]
             );
             array_push($sell_send_to_sidik_callback, $list_sell_produk_send_to_sidik);
+
+            // $list_sell_produk_send_to_sidik = array(
+            //     'nama_produk' => $sell->product->name,
+            //     'jumlah' => $sell->qty,
+            //     'harga_jual' => $sell->unit_price,
+            //     'subtotal' => $request->subtotal[$x]
+            // );
+            // array_push($sell_send_to_sidik_callback, $list_sell_produk_send_to_sidik);
 
 
             $sellpurchase = new SellPurchase();
