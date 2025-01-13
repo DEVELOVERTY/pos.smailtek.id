@@ -31,6 +31,7 @@
                                 <div class="input-group">
                                     <select class="select2 form-control form-user" name="customer_id" id="customer_id" style="width:100%; ">
                                         @foreach ($customer as $u)
+                                        <option value="">-Pilih Pelanggan-</option>
                                         <option value="{{ $u->id }}">{{ $u->name }}</option>
                                         @endforeach
                                     </select>
