@@ -46,17 +46,17 @@ class UpdateUsersTimezone
             return;
         }
 
-        $ip = $this->getFromLookup();
-        $geoip_info = geoip()->getLocation($ip);
+        // $ip = $this->getFromLookup();
+        // $geoip_info = geoip()->getLocation($ip);
 
-        if ($user->timezone != $geoip_info['timezone']) {
-            if (config('timezone.overwrite') == true || $user->timezone == null) {
-                $user->timezone = $geoip_info['timezone'] ?? $geoip_info->time_zone['name'];
-                $user->save();
+        // if ($user->timezone != $geoip_info['timezone']) {
+        //     if (config('timezone.overwrite') == true || $user->timezone == null) {
+        //         $user->timezone = $geoip_info['timezone'] ?? $geoip_info->time_zone['name'];
+        //         $user->save();
 
-                $this->notify($geoip_info);
-            }
-        }
+        //         $this->notify($geoip_info);
+        //     }
+        // }
     }
 
     /**
