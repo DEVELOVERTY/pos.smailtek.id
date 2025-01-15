@@ -20,14 +20,22 @@ class VariantSheet implements ToModel, WithHeadingRow
         $margin = ($row['selling_price'] / $row['purchase_price']) * 100 - 100;
         $getMargin = ceil($margin);
 
-        $cek_sku = Product::where('sku', $row['sku'])->first();
-        if($cek_sku->count() > 0){
-            return new Variation(
+        $product = Product::where('id', $row['product_id'])->whereNotNull('deleted_at')->first();
+
+        if ($product) {
+            return null;
+        }
+
+        $product_exist = Product::where('id', $row['product_id'])->exists();
+        if (!$product_exist) {
+            return null;
+        }
+        
+        return new Variation(
            
                 [
                 // 'id'        => $row['id'],
-                // 'product_id'    => $row['product_id'],
-                'product_id'    => $cek_sku->id,
+                'product_id'    => $row['product_id'],
                 'sku'       => $row['sku'],
                 'price_inc_tax' => $row['purchase_price'],
                 'purchase_price'    => $row['purchase_price'],
@@ -36,7 +44,7 @@ class VariantSheet implements ToModel, WithHeadingRow
                 'margin'    => $getMargin
             ]
         );
-        }
+        
 
 
        
