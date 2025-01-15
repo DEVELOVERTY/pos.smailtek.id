@@ -21,12 +21,11 @@ class VariantSheet implements ToModel, WithHeadingRow
         $getMargin = ceil($margin);
 
         $product = Product::where('id', $row['product_id'])->whereNotNull('deleted_at')->first();
-
+        $product_exist = Product::where('id', $row['product_id'])->exists();
         if ($product) {
             return null;
         }
 
-        $product_exist = Product::where('id', $row['product_id'])->exists();
         if (!$product_exist) {
             return null;
         }

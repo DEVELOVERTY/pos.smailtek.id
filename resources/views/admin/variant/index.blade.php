@@ -34,6 +34,7 @@
                                 <table class="table table-striped" id="table-1">
                                     <thead>
                                         <tr>
+                                            <th>ID</th>
                                             <th>{{ __('produk.variant_name') }}</th>
                                             <th>{{ __('produk.variant_content') }}</th>
                                             <th width="110px"><span class="fa fa-cogs"></span></th>
@@ -42,6 +43,7 @@
                                     <tbody>
                                         @foreach ($data as $c)
                                         <tr>
+                                            <td> {{ $c->id }} </td>
                                             <td> {{ $c->name }} </td>
                                             <td>
                                                 @foreach($c->value as $value)
