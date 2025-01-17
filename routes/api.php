@@ -27,7 +27,7 @@ Route::prefix('transaction')->group(function() {
     Route::get('print-invoice-rest/{id}',[RestController::class,'printInvoice'])->name('print-invoice-rest');
 });
 
-Route::get('is-transaction-fingerprint-verified', [TransactionController::class, 'isTransactionFingerprintVerified']);
+Route::get('is-transaction-fingerprint-verified/{transactionCode}', [TransactionController::class, 'isTransactionFingerprintVerified']);
 Route::get('/user/{userId}/verify-fingerprint/{transactionCode}', [UserController::class, 'verifyFingerprint'])->name('user.verify-fingerprint');
 Route::post('/user/verify-fingerprint', [UserController::class, 'processVerifyFingerprint'])->name('user.process-verify-fingerprint');
 

@@ -1292,7 +1292,7 @@ async function verifikasiTransaction() {
 }
 
 async function checkverifikasiTransaction() {
-    let response = await fetch(`${posDomain}/api/is-transaction-fingerprint-verified/`, {
+    let response = await fetch(`${posDomain}/api/is-transaction-fingerprint-verified/`+transactionCode, {
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json, text-plain, */*",

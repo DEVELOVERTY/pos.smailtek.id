@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    public function isTransactionFingerprintVerified()
+    public function isTransactionFingerprintVerified($transactionCode)
     {
         return [
             'status' => 'success',
-            'data' => optional(LogFinger::where('transaction_code', request('transaction_code'))->where('finger', 'true')->first())->finger ? true : false,
+            'data' => optional(LogFinger::where('transaction_code', $transactionCode)->where('finger', 'true')->first())->finger ? true : false,
         ];
     }
 }
