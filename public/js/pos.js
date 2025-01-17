@@ -1306,6 +1306,7 @@ async function checkverifikasiTransaction() {
     });
     response = await response.json();
 
+    console.log(response.data);
     if (response.data === true) {
         $(".savepay").show();
         clearInterval(fingerprintCheckTimer);
