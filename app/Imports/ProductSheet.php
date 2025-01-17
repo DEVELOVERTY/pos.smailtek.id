@@ -47,6 +47,7 @@ class ProductSheet implements ToModel, WithHeadingRow
                     'barcode_type'    => 'required',
                     'category_id'    => 'required',
                     'alert_qty'    => 'required',
+                    'unit_id'    => 'required',
                     'product_type'    => 'required'
                 ])->validate();
             }
@@ -61,6 +62,7 @@ class ProductSheet implements ToModel, WithHeadingRow
                 'category_id'   => $row['category_id'],
                 'brand_id'      => $brand,
                 'alert_quantity'    => $row['alert_qty'],
+                'unit_id'       => $row['unit_id'],
                 'type'          => $row['product_type']
             ]);
         }
