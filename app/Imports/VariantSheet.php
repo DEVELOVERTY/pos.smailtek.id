@@ -76,18 +76,22 @@ class VariantSheet implements ToModel, WithHeadingRow
                 // $rak = $row['rak_id'] ? $row['rak_id'] : null;
                 // $tax = $row['tax'] ? $row['tax'] : 0;
 
-                return new Variation(
-                    [
-                        'id'        => $row['id'],
-                        'product_id'    => $row['product_id'],
-                        'sku'       => $sku,
-                        'price_inc_tax' => $row['purchase_price'],
-                        'purchase_price'    => $row['purchase_price'],
-                        'name'      => $row['name'],
-                        'selling_price' => $row['selling_price'],
-                        'margin'    => $getMargin,
-                    ]
-                );
+                $product_exist = Product::where('id', $row['product_id'])->exists();
+                if ($product_exist) {
+                    return new Variation(
+                        [
+                            'id'        => $row['id'],
+                            'product_id'    => $row['product_id'],
+                            'sku'       => $sku,
+                            'price_inc_tax' => $row['purchase_price'],
+                            'purchase_price'    => $row['purchase_price'],
+                            'name'      => $row['name'],
+                            'selling_price' => $row['selling_price'],
+                            'margin'    => $getMargin,
+                        ]
+                    );
+                }
+                return null;
             }
         }
     }
