@@ -309,7 +309,7 @@ class SellController extends Controller
                 'id_usercard' => $id_usercard,
                 'total_harga' => $data->final_total,
                 'produk' => $sell_send_to_sidik_callback,
-                'cara_bayar' => $methodpay
+                'carabayar' => $methodpay
             ];
 
             $res = Http::withHeaders([
