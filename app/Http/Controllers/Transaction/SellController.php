@@ -257,7 +257,7 @@ class SellController extends Controller
                 'nama_produk' => $sell->product->name,
                 'jumlah' => $sell->qty,
                 'harga_jual' => $sell->unit_price,
-                'subtotal' => $request->subtotal[$x]
+                'subtotal' => str_replace(',', '', $request->subtotal[$x])
             );
             array_push($sell_send_to_sidik_callback, $list_sell_produk_send_to_sidik);
 
