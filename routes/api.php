@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Pos\PosController;
 use App\Http\Controllers\Api\RestController;
 use App\Http\Controllers\Api\sidik\TransactionController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
