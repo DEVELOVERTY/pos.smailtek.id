@@ -1288,7 +1288,7 @@ async function isValidasi(id_user_card) {
 let fingerprintCheckTimer = null;
 
 async function verifikasiTransaction() {
-    fingerprintCheckTimer = setInterval(checkverifikasiTransaction, 5000);   
+    fingerprintCheckTimer = setInterval(checkverifikasiTransaction, 2000);   
 }
 
 async function checkverifikasiTransaction() {
