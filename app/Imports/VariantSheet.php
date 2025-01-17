@@ -57,15 +57,14 @@ class VariantSheet implements ToModel, WithHeadingRow
         if ($row['id'] != null) {
             if (
                 $row['product_id'] == null  || $row['purchase_price'] == null || $row['name'] == null || $row['selling_price'] == null
-                || $row['unit_id'] == null
+                
             ) {
                 Validator::make($row, [
                     'id'        => 'required|unique:variations,id',
                     'product_id'      => 'required',
                     'purchase_price'   => 'required',
                     'name'   => 'required',
-                    'selling_price' => 'required',
-                    'unit_id'   => 'required'
+                    'selling_price' => 'required'
                 ])->validate();
             }
 
@@ -86,7 +85,6 @@ class VariantSheet implements ToModel, WithHeadingRow
                         'name'      => $row['name'],
                         'selling_price' => $row['selling_price'],
                         'margin'    => $getMargin,
-                        'unit_id'   => $row['unit_id'],
                     ]
                 );
             }
