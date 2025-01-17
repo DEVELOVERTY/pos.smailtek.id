@@ -52,7 +52,7 @@
                                             <td> {{$d->name}} </td>
                                             <td> {{$d->code}} </td>
                                             <td> {{$d->detail}} </td>
-                                            <td> <img src="{{ asset($d->image) }}" width="60px"> </td>
+                                            <td></td> <img src="{{ asset($d->image ?? 'assets/images/image.png') }}" width="60px"> </td>
                                             <td>
                                                 @can("Update Brand")
                                                 <a href="{{route('brand.update',$d->id)}}" class="btn btn-warning"><i class="fas fa-edit"></i></a>
