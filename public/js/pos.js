@@ -1243,6 +1243,7 @@ async function isBarcodeValid(barcode) {
                     } else {
                         transactionCode = new Date().toISOString().replace(/[-:.TZ]/g, '')+""+response.data.userCardId;
                         if(response.data.fingerprints !== null && transactionCode !== null){
+                           console.log(posDomain+"/user/"+response.data.userCardId+'/verify-fingerprint/'+transactionCode);
                             window.location.href = 'finspot:FingerspotVer;'+btoa(posDomain+"/user/"+response.data.userCardId+'/verify-fingerprint/'+transactionCode);                         
                             verifikasiTransaction();                      
                         }
@@ -1304,7 +1305,7 @@ async function checkverifikasiTransaction() {
     response = await response.json();
 
     console.log(response.data);
-    if (response.data) {
+    if (response.data === 'true') {
         $(".non-sidik").show();
         clearInterval(fingerprintCheckTimer);
     }
