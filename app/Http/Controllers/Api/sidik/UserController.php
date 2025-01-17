@@ -70,7 +70,7 @@ class UserController extends Controller
                 'barcode' => 'true',
                 'finger' => 'true',
                 'transaction_code' => $transactionCode,
-                'store_id' => Session::get('mystore')
+                'store_id' => 1001,
             ]);
            
         } else {
