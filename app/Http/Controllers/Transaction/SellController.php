@@ -338,6 +338,7 @@ class SellController extends Controller
             'sidik'         => $sell_send_to_sidik_callback,
             'id_usercard'   => $request->id_usercard,
             'token_mart'    => $kode,
+            'response_sidik' => $res,
             'message' => __('success')
         ]);
     }
