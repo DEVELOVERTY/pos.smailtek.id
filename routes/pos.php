@@ -22,9 +22,3 @@ Route::middleware(['auth','store'])->group(function () {
     
 
 });
-
-// verify
-Route::middleware(['auth'])->group(function () {
-    Route::get('/user/{userId}/verify-fingerprint/{transactionCode}', [UserController::class, 'verifyFingerprint'])->name('user.verify-fingerprint');
-    Route::post('/user/verify-fingerprint', [UserController::class, 'processVerifyFingerprint'])->name('user.process-verify-fingerprint');
-});
