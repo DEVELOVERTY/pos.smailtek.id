@@ -310,7 +310,7 @@ class SellController extends Controller
         }
 
         
-        if($request->barcode_rfid_sidik){
+        if($request->barcode_rfid_sidik != null){
             $id_usercard = $request->id_usercard;
 
             $penjualan = [
