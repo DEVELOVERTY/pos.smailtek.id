@@ -216,7 +216,6 @@ class SellController extends Controller
             $payment->method            = 'card';
             $methodpay = 'Kartu Kredit';
         } if ($request->barcode_rfid_sidik) {
-            $request->barcode_rfid_sidik ? $payment->barcode_rfid_sidik = $request->barcode_rfid_sidik : null;
             $payment->method = 'SiDiK';
             $methodpay = 'Kartu SiDiK';
         }else {
