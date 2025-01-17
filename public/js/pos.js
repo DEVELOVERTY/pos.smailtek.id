@@ -1245,8 +1245,8 @@ async function isBarcodeValid(barcode) {
                         
                         transactionCode = new Date().toISOString().replace(/[-:.TZ]/g, '')+""+response.data.userCardId;
                         if(response.data.fingerprints !== null && transactionCode !== null){
-                           console.log(posDomain+"/user/"+response.data.userCardId+'/verify-fingerprint/'+transactionCode);
-                            window.location.href = 'finspot:FingerspotVer;'+btoa(posDomain+"/user/"+response.data.userCardId+'/verify-fingerprint/'+transactionCode);                         
+                           console.log(posDomain+"/user/"+response.data.userCardId+'/api/verify-fingerprint/'+transactionCode);
+                            window.location.href = 'finspot:FingerspotVer;'+btoa(posDomain+"/api/user/"+response.data.userCardId+'/verify-fingerprint/'+transactionCode);                         
                             verifikasiTransaction();                      
                         }
                     }        
