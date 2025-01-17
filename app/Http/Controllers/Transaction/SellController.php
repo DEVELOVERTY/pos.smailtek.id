@@ -336,6 +336,7 @@ class SellController extends Controller
             'subtotal'      => number_format($data->total_before_tax),
             'sell'          => $sell_callback,
             'sidik'         => $sell_send_to_sidik_callback,
+            'id_usercard'   => $request->id_usercard,
             'message' => __('success')
         ]);
     }
