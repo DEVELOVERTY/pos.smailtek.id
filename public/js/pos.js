@@ -1307,7 +1307,7 @@ async function checkverifikasiTransaction() {
     response = await response.json();
 
     console.log(response.data);
-    if (response.data === 'true') {
+    if (response.data === true) {
         $(".non-sidik").show();
         clearInterval(fingerprintCheckTimer);
     }
