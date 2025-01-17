@@ -261,14 +261,6 @@ class SellController extends Controller
             );
             array_push($sell_send_to_sidik_callback, $list_sell_produk_send_to_sidik);
 
-            // $list_sell_produk_send_to_sidik = array(
-            //     'nama_produk' => $sell->product->name,
-            //     'jumlah' => $sell->qty,
-            //     'harga_jual' => $sell->unit_price,
-            //     'subtotal' => $request->subtotal[$x]
-            // );
-            // array_push($sell_send_to_sidik_callback, $list_sell_produk_send_to_sidik);
-
 
             $sellpurchase = new SellPurchase();
             $sellpurchase->sell_id  = $sell->id;
@@ -343,6 +335,7 @@ class SellController extends Controller
             'paymethod'     => $methodpay,
             'subtotal'      => number_format($data->total_before_tax),
             'sell'          => $sell_callback,
+            'sidik'         => $sell_send_to_sidik_callback,
             'message' => __('success')
         ]);
     }
