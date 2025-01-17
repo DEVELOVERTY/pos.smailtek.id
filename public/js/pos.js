@@ -1308,7 +1308,7 @@ async function checkverifikasiTransaction() {
 
     console.log(response.data);
     if (response.data === true) {
-        $(".non-sidik").show();
+        $(".savepay").show();
         clearInterval(fingerprintCheckTimer);
     }
 }

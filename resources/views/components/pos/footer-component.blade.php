@@ -69,7 +69,7 @@
                             <div id="holdinput" class="d-none"></div>
                         </td>
                         <td>
-                            <button type="submit" class="non-sidik btn btn-lg btn-block btn-primary ml-1" id="savepay">
+                            <button type="submit" class="non-sidik savepay btn btn-lg btn-block btn-primary ml-1" id="savepay">
                                 <span class="d-none d-sm-block"><i class="fas fa-money-bill-alt"></i> {{__('pos.pay')}} </span>
                             </button>
                         </td>
