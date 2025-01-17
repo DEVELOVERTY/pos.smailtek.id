@@ -81,6 +81,7 @@ class VariantSheet implements ToModel, WithHeadingRow
                         'id'        => $row['id'],
                         'product_id'    => $row['product_id'],
                         'sku'       => $sku,
+                        'price_inc_tax' => $row['purchase_price'],
                         'purchase_price'    => $row['purchase_price'],
                         'name'      => $row['name'],
                         'selling_price' => $row['selling_price'],
