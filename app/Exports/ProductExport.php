@@ -16,7 +16,6 @@ class ProductExport implements FromCollection, WithHeadings
     {
         return Product::leftJoin('variations', 'products.id', '=', 'variations.product_id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
-            ->leftJoin('categories as sub_categories', 'products.subcategory', '=', 'sub_categories.id')
             ->join('units', 'products.unit_id', '=', 'units.id')
             ->join('brands', 'products.brand_id', '=', 'brands.id')
             ->select(
@@ -27,7 +26,6 @@ class ProductExport implements FromCollection, WithHeadings
                 'categories.name as category',
                 'brands.id as brand_id',
                 'brands.name as brand',
-                'sub_categories.name as sub_category',
                 'units.id as unit_id',
                 'units.name as unit',
                 'variations.id as variant_id',
@@ -56,7 +54,6 @@ class ProductExport implements FromCollection, WithHeadings
             'Category',
             'Brand ID',
             'Brand',
-            'Sub Category',
             'Unit ID',
             'Unit',
             'Variant ID',
