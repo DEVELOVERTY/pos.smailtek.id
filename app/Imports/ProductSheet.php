@@ -38,7 +38,7 @@ class ProductSheet implements ToModel, WithHeadingRow, WithValidation
     // Handle variations if type is 'single'
     if ($row['type'] == 'single') {
         $variation = new Variation([
-            'product_id' => $product->id,
+            'product_id' => $row['id'],
             'sku' => $row['sku_product'],
             'price_inc_tax' => $row['p_price'],
             'purchase_price' => $row['p_price'],
