@@ -56,8 +56,8 @@ class VariantSheet implements ToModel, WithHeadingRow, WithValidation
         public function customValidationMessages()
         {
             return [
-                // '*.product_id.required' => 'Product ID is required.',
-                // '*.product_id.exists' => 'Product ID must exist in the products table.',
+                '*.product_id.required' => 'Product ID is required.',
+                '*.product_id.exists' => 'Product ID must exist in the products table.',
                 '*.sku_variant.required' => 'SKU is required.',
                 '*.sku_variant.string' => 'SKU must be a string.',
                 '*.sku_variant.max' => 'SKU may not be greater than 255 characters.',
