@@ -45,6 +45,15 @@
                                     <div class="accordion-body">
                                         <h5 class="mb-4">Perhatian</h5>
                                         <h6>LAST ID PRODUCT : {{ $lastProductId }}</h6>
+                                        <br><h6>Type Barcode :</h6>
+                                        <br><ul>
+                                            <li>c128</li>
+                                            <li>c39</li>
+                                            <li>ean13</li>
+                                            <li>ean8</li>
+                                            <li>upcA</li>
+                                            <li>upcE</li>
+                                        </ul>
                                         <br>Pastikan bahwa format file yang diimport berbentuk <b><small>.xlsx</small></b>, 
                                         <br>Untuk mempermudah proses import, silahkan download sample file yang telah disediakan.
                                         <br>Untuk product dan variant, silahkan download file dibawah ini.
