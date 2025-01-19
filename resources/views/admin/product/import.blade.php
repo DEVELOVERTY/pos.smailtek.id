@@ -30,8 +30,8 @@
                 <div class="card">
                     <div class="card-body">
 
-                        <h4 class="card-title">Cara Import Data Produk</h4>
-                        <p class="card-title-desc">Berikut penjelasan untuk mengimport produk secara masaal di mdhpos</p>
+                        <h4 class="card-title">Langkah-Langkah Import Data Produk</h4>
+                        <p class="card-title-desc">Berikut penjelasan untuk mengimport produk</p>
 
 
                         <div class="accordion" id="accordionExample">
