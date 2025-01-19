@@ -46,6 +46,7 @@
                                         Pastikan bahwa format file yang diimport berbentuk <b><small>.xlsx</small></b>, 
                                         <br>Untuk mempermudah proses import, silahkan download sample file yang telah disediakan.
                                         <br>Untuk product dan variant, silahkan download file dibawah ini.
+                                        <br>Variant diimport jika menggunaka type variabel di product.
                                         <br>Jika type single maka <b>p_price</b>, <b>s_price</b>,	<b>mrg</b> harus diisi pada format product dan pada variant tidak perlu diisi   
                                         <br>Jika type variabel maka <b>purchase_price</b>, <b>selling_price</b>, <b>margin</b> harus diisi pada format variant
                                         <h5 class="mb-4">Format ( Untuk Import Produk)</h5>

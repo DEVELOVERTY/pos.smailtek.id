@@ -22,8 +22,11 @@ class VariantSheet implements ToModel, WithHeadingRow, WithValidation
         $getMargin = ceil($margin);
 
 
-        return new Variation(
-           
+        $type_product = Product::where('id', $row['product_id'])->select('type')->first();
+        if($type_product == 'single'){
+            return null;
+        }else{
+            return new Variation(
                 [
                 'product_id'    => $row['product_id'],
                 'sku'       => $row['sku_variant'],
@@ -34,15 +37,14 @@ class VariantSheet implements ToModel, WithHeadingRow, WithValidation
                 'margin'    => $row['margin'] ?? $getMargin,
             ]
         );
-
-       
+        }
         
     }
 
     public function rules(): array
         {
             return [
-                // '*.product_id' => 'required|exists:products,id',
+                '*.product_id' => 'required|exists:products,id',
                 '*.sku_variant' => 'required|string|max:255',
                 '*.purchase_price' => 'required|numeric|min:0',
                 '*.selling_price' => 'required|numeric|min:0',
