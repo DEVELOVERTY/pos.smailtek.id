@@ -22,7 +22,7 @@ class ProductSheet implements ToModel, WithHeadingRow, WithValidation
         'id' => $row['id'],
         'name' => $row['name'],
         'sku' => $row['sku_product'],
-        'type' => $row['type'],
+        'type' => strtolower($row['type']),
         'category_id' => $row['category'],
         'brand_id' => $row['brand_id'],
         'unit_id' => $row['unit_id'],
@@ -36,7 +36,7 @@ class ProductSheet implements ToModel, WithHeadingRow, WithValidation
     $product->save();
 
     // Handle variations if type is 'single'
-    if ($row['type'] == 'single') {
+    if (strtolower($row['type']) == 'single') {
         $variation = new Variation([
             'product_id' => $row['id'],
             'sku' => $row['sku_product'],
