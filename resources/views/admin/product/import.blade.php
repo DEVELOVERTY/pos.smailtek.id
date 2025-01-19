@@ -43,32 +43,38 @@
                                 </h2>
                                 <div id="documentasiImport" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
-                                        Pastikan bahwa format file yang diimport berbentuk <b><small>.xlsx</small></b>, kami sarankan untuk mengimport produk beserta dengan variant produk.
-                                        Kamu dapat mengimport produk disheet pertama, dan variant di sheet kedua dengan mengikuti format yang telah ditentukam sebagai berikut
-                                        <hr>
-                                        <h5 class="mb-4">Format Sheet 1 ( Untuk Import Produk)</h5>
-                                        <table class="table" style="background-color: #00b050;">
+                                        Pastikan bahwa format file yang diimport berbentuk <b><small>.xlsx</small></b>, 
+                                        <br>Untuk mempermudah proses import, silahkan download sample file yang telah disediakan.
+                                        <br>Untuk product dan variant, silahkan download file dibawah ini.
+                                        <br> pada file product terdapat colom sebagai berikut :
+                                        <h5 class="mb-4">Format ( Untuk Import Produk)</h5>
+                                        <table class="table" style="background-color: green; overflow-x: auto; display: block; white-space: nowrap;">
                                             <tr class="text-white">
-                                                <th>ID</th>
-                                                <th>PRODUCT NAME</th>
-                                                <th>SKU</th>
-                                                <th>BARCODE TYPE</th>
-                                                <th>CATEGORY ID</th>
+                                                <th>NAME (Nama Product)</th>
+                                                <th>SKU PRODUCT</th>
+                                                <th>TYPE</th>
+                                                <th>CATEGORY</th>
+                                                <th>SUBCATEGORY</th>
                                                 <th>BRAND ID</th>
                                                 <th>UNIT ID</th>
-                                                <th>ALERT QTY</th>
-                                                <th>PRODUCT TYPE</th>
+                                                <th>BARCODE TYPE</th>
+                                                <th>ALERT QUANTITY</th>
+                                                <th>WEIGHT</th>
+                                                <th>DESCRIPTION</th>
+                                                <th>P PRICE (Purchase Price)</th>
+                                                <th>S PRICE (Sell Price)</th>
+                                                <th>MRG (Margin)</th>
                                             </tr>
                                         </table>
-                                        <h5 class="mb-4 mt-4">Format Sheet 2 ( Untuk Import Variant)</h5>
+                                        <h5 class="mb-4">Format ( Untuk Import Variant)</h5>
                                         <table class="table" style="background-color: #00b050;">
                                             <tr class="text-white">
-                                                <th>ID</th>
-                                                <th>PRODUCT ID</th>
-                                                <th>SKU</th>
+                                                <th>PRODUCT ID (Dilihat di menu Product)</th>
+                                                <th>SKU VARIANT</th>
                                                 <th>NAME</th>
                                                 <th>PURCHASE PRICE</th>
-                                                <th>SELLING PRICE</th> 
+                                                <th>SELLING PRICE</th>
+                                                <th>MARGIN</th>
                                             </tr>
                                         </table>
                                     </div>
