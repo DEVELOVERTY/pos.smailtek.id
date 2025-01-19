@@ -46,10 +46,12 @@
                                         Pastikan bahwa format file yang diimport berbentuk <b><small>.xlsx</small></b>, 
                                         <br>Untuk mempermudah proses import, silahkan download sample file yang telah disediakan.
                                         <br>Untuk product dan variant, silahkan download file dibawah ini.
-                                        <br> pada file product terdapat colom sebagai berikut :
+                                        <br>Jika type single maka <b>p_price</b>, <b>s_price</b>,	<b>mrg</b> harus diisi pada format product dan pada variant tidak perlu diisi   
+                                        <br>Jika type variabel maka <b>purchase_price</b>, <b>selling_price</b>, <b>margin</b> harus diisi pada format variant
                                         <h5 class="mb-4">Format ( Untuk Import Produk)</h5>
                                         <table class="table" style="background-color: green; overflow-x: auto; display: block; white-space: nowrap;">
                                             <tr class="text-white">
+                                                <th>ID</th>
                                                 <th>NAME (Nama Product)</th>
                                                 <th>SKU PRODUCT</th>
                                                 <th>TYPE</th>

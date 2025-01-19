@@ -17,8 +17,9 @@ class ProductSheet implements ToModel, WithHeadingRow, WithValidation
     */
     public function model(array $row)
     {
-
+    
     $product = new Product([
+        'id' => $row['id'],
         'name' => $row['name'],
         'sku' => $row['sku_product'],
         'type' => $row['type'],
@@ -52,6 +53,7 @@ class ProductSheet implements ToModel, WithHeadingRow, WithValidation
     public function rules(): array
     {
         return [
+            'id' => 'required|unique:products,id',
             'name' => 'required',
             'sku_product' => 'required',
             'type' => 'required',
@@ -63,6 +65,7 @@ class ProductSheet implements ToModel, WithHeadingRow, WithValidation
             's_price' => 'required_if:type,single',
             'mrg' => 'required_if:type,single',
         ];
+        
     }
 
     private function generateEAN()

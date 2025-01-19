@@ -12,7 +12,22 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded  = ['id'];
+    protected $fillable = [
+        'id',
+        'name',
+        'sku',
+        'type',
+        'category_id',
+        'brand_id',
+        'unit_id',
+        'barcode_type',
+        'alert_quantity',
+        'weight',
+        'description',
+        'tax_id',
+        'image',
+        'status',
+    ];
     public $table    = 'products';
 
     public function variant()
