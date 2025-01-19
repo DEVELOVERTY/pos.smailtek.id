@@ -529,7 +529,8 @@ class ProductController extends Controller
 
     public function productimport()
     {
-        return view('admin.product.import', ["page" => "Product Import"]);
+        $lastProductId = Product::latest('id')->first()->id ?? 0;
+        return view('admin.product.import', ["page" => "Product Import", "lastProductId" => $lastProductId]);
     }
 
     public function import(Request $request)

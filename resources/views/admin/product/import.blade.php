@@ -43,7 +43,9 @@
                                 </h2>
                                 <div id="documentasiImport" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
-                                        Pastikan bahwa format file yang diimport berbentuk <b><small>.xlsx</small></b>, 
+                                        <h5 class="mb-4">Perhatian</h5>
+                                        <h6>LAST ID PRODUCT : {{ $lastProductId }}</h6>
+                                        <br>Pastikan bahwa format file yang diimport berbentuk <b><small>.xlsx</small></b>, 
                                         <br>Untuk mempermudah proses import, silahkan download sample file yang telah disediakan.
                                         <br>Untuk product dan variant, silahkan download file dibawah ini.
                                         <br>Variant diimport jika menggunaka type variabel di product.
