@@ -23,7 +23,7 @@ class ProductSheet implements ToModel, WithHeadingRow, WithValidation
         'name' => $row['name'],
         'sku' => $row['sku_product'],
         'type' => $row['type'],
-        'category_id' => $row['subcategory'] ?? $row['category'], // Using subcategory or category
+        'category_id' => $row['category'],
         'brand_id' => $row['brand_id'],
         'unit_id' => $row['unit_id'],
         'barcode_type' => $row['barcode_type'],
