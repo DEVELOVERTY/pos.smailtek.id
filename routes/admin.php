@@ -138,6 +138,8 @@ Route::middleware('auth')->group(function () {
             // Import Master Data
             Route::get("import",[SettingController::class,'import'])->name('setting.import');
             Route::post("import-store",[SettingController::class,'importStore'])->name('setting.import_store');
+            
+            
         });
 
         Route::prefix('hrm')->group(function () {
@@ -215,6 +217,7 @@ Route::middleware('auth')->group(function () {
 
             // Import Category & Subcategory
             Route::get("/import",[CategoryController::class,'import'])->name('category.import');
+            
             Route::post("/post-category",[CategoryController::class,'importStore'])->name('category.import_store');
         });
 
@@ -265,7 +268,7 @@ Route::middleware('auth')->group(function () {
             // Import Product
             Route::get("import-product",[ProductController::class,'productimport'])->name('product.import');
             Route::post('import',[ProductController::class,'import'])->name('product.import_store');
-
+            Route::post('import-variant',[ProductController::class,'import_variant'])->name('product.import_variant_store');
             /**
              *  Variant Route
              */

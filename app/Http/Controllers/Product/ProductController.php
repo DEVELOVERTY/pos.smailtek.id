@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
+use App\Imports\VariantImport;
 
 class ProductController extends Controller
 {
@@ -548,4 +549,27 @@ class ProductController extends Controller
 
         return back()->with(['gagal' => 'Maaf, File Import Tidak Terbaca']);
     }
+
+    public function import_variant(Request $request)
+    {
+        $this->validate($request, [
+            'file'  => 'mimes:xlsx'
+        ]);
+
+        if ($request->file_variant) {
+            $file = $this->uploadImage($request, 'file_variant', 'import'); 
+            $import = Excel::import(new VariantImport(), $file);
+            if($import) { 
+                return redirect()->back()->with(['flash' => "Import Data Berhasil"]);
+            } else {
+                //redirect
+                return redirect()->back()->with(['gagal' => "Terjadi kesalahan"]);
+            }
+        }
+
+        return back()->with(['gagal' => 'Maaf, File Import Tidak Terbaca1']);
+    }
+
+
+
 }

@@ -11,7 +11,7 @@
         <!-- start page title -->
         <div class="page-title-box">
             <div class="row align-items-center">
-                <div class="col-md-8">
+                <div class="col-md-8">`
                     <h6 class="page-title">{{$page}}</h6>
                 </div>
                 <div class="col-md-4">
@@ -81,17 +81,18 @@
             </div>
 
             <div class="col-md-12 col-12">
-                <div class="card ">
                     <div class="card-header header-modal ">
                         <div class="row">
                             <div class="col-6">
                                 <h5 class="card-title text-white" style="margin-top: -5px">{{ $page }}</h5>
                             </div>
                             <div class="col-6">
-                                <a href="{{asset('assets/import_product.xlsx')}}" target="_blank" class="btn btn-sm btn-success float-end" style="margin-top: -9px; border: 2px solid white; margin-top: -6px"><i class="fas fa-download"></i> Download Sample Import </a>
+                                <a href="{{asset('assets/product.xlsx')}}" target="_blank" class="btn btn-sm btn-success float-end" style="margin-top: -9px; border: 2px solid white; margin-top: -6px"><i class="fas fa-download"></i> Download Sample Import </a>
                             </div>
                         </div>
                     </div>
+
+                    
                     <div class="card-content">
                         <div class="card-body">
                             <form action="{{route('product.import_store')}}" method="POST" enctype="multipart/form-data" class="form form-horizontal">
@@ -111,6 +112,37 @@
                             </form>
                         </div>
                     </div>
+                    
+                    <div class="card-header header-modal ">
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 class="card-title text-white" style="margin-top: -5px">{{ $page }} Variant</h5>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{asset('assets/variant.xlsx')}}" target="_blank" class="btn btn-sm btn-success float-end" style="margin-top: -9px; border: 2px solid white; margin-top: -6px"><i class="fas fa-download"></i> Download Sample Import </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body">
+                            <form action="{{route('product.import_variant_store')}}" method="POST" enctype="multipart/form-data" class="form form-horizontal">
+                                @csrf
+                                <div class="form-body">
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-12 form-group">
+                                            <label>Upload File, (xlsx)</label>
+                                            <input class="dropify" type="file" id="file_variant" name="file_variant" data-default-file="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 d-flex justify-content-end">
+                                        <button class="btn btn-info me-1 mb-1">Import Data</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
