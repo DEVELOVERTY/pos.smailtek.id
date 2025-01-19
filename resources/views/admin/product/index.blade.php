@@ -15,7 +15,12 @@
                 </div>
                 <div class="col-md-4">
                     @can("Tambah Produk")
-                    <a class="btn btn-md btn-primary float-end" href="{{ route('product.create') }}"><i class="fa fa-plus"></i> {{ __('sidebar.add_product') }}</a>
+                    <a class="btn btn-md btn-primary float-end" href="{{ route('product.create') }}">
+                        <i class="fa fa-plus"></i> {{ __('sidebar.add_product') }}
+                    </a>
+                    <a class="btn btn-md btn-success float-end me-2" href="{{ route('product.export') }}">
+                        <i class="fa fa-file-excel"></i> Export Product
+                    </a>
                     @endcan
                 </div>
             </div>

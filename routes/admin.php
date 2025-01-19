@@ -265,6 +265,9 @@ Route::middleware('auth')->group(function () {
             Route::post('barcode-print', [ProductController::class, 'printBar'])->name('barcode.print');
             Route::get('purchase-label/{id}', [ProductController::class, 'poLabel'])->name('barcode.purchase');
 
+            // export Product
+            Route::get("export-product",[ProductController::class,'product_export'])->name('product.export');
+
             // Import Product
             Route::get("import-product",[ProductController::class,'productimport'])->name('product.import');
             Route::post('import',[ProductController::class,'import'])->name('product.import_store');

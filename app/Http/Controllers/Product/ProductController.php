@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Product;
 
+
 use App\Helper;
 use App\Http\Controllers\Controller;
 use App\Imports\ProductImport;
+use App\Exports\ProductExport;
 use App\Models\Admin\Store;
 use App\Models\Admin\Taxrate;
 use App\Models\Product\Brand;
@@ -570,6 +572,10 @@ class ProductController extends Controller
         return back()->with(['gagal' => 'Maaf, File Import Tidak Terbaca1']);
     }
 
+    public function product_export()
+    {
+        return Excel::download(new ProductExport, 'product.xlsx');
+    }
 
 
 }
