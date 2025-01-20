@@ -45,7 +45,7 @@ class VariantSheet implements ToModel, WithHeadingRow, WithValidation
         {
             return [
                 '*.product_id' => 'required|exists:products,id',
-                '*.sku_variant' => 'required|string|max:255',
+                '*.sku_variant' => 'required',
                 '*.purchase_price' => 'required|numeric|min:0',
                 '*.selling_price' => 'required|numeric|min:0',
                 '*.name' => 'required|string|max:255',
