@@ -7,6 +7,7 @@ use App\Imports\MasterImport;
 use App\Models\Admin\Setting;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Validator;
 
 class SettingController extends Controller
 {
@@ -66,5 +67,26 @@ class SettingController extends Controller
         }
 
         return back()->with(['gagal' => 'Maaf, File Import Tidak Terbaca']);
+    }
+
+
+    public function bg_login_store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'bg_login' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $image = $request->file('bg_login');
+        $imageData = base64_encode(file_get_contents($image));
+
+        $imageRecord = Setting::findOrFail(1);
+        $imageRecord->bg_login = $imageData;
+        $imageRecord->save();
+
+        return back()->with('success', 'Image uploaded successfully!');
     }
 }

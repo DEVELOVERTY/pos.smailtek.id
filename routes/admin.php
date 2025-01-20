@@ -74,6 +74,7 @@ Route::middleware('auth')->group(function () {
             // settings
             Route::get('settings', [SettingController::class, 'index'])->name('sett.index');
             Route::post('settings-store', [SettingController::class, 'store'])->name('sett.store');
+            Route::post('bg-login-store', [SettingController::class, 'bg_login_store'])->name('sett.bg_login_store');
 
             // HRM SETTINGS
             Route::get('hrm-setting', [SettingsHrmController::class, 'index'])->name('hrm.setting');

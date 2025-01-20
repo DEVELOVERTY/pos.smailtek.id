@@ -1,6 +1,10 @@
 @extends('layouts.app')
 @section('content')
-<div class="authbg" style="background: url(<?=asset('installer/img/background.png');?>);background-size: cover;background-position: center;"></div>
+@if(empty($data->bg_login))
+    <div class="authbg" style="background: url(<?=asset('assets/images/noimage.png');?>);background-size: cover;background-position: center;"></div>    
+@else
+    <div class="authbg" style="background: url('data:image/png;base64,{{ $data->bg_login }}');background-size: cover;background-position: center;"></div>
+@endif
 
 <div class="wrapper-page auth-page-full">
 

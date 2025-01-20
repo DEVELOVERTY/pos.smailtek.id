@@ -148,6 +148,35 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Background Login</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ route('sett.bg_login_store') }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="form-group">
+                                <label for="bg_login">{{ __('Choose Image') }}</label>
+                                <input type="file" class="form-control" name="bg_login" id="bg_login" required>
+                            </div>
+                            <div class="form-group mt-3">
+                                <button type="submit" class="btn btn-primary">{{ __('Upload') }}</button>
+                            </div>
+                        </form>
+                        @if($settings->bg_login)
+                            <div class="mt-3">
+                                <img src="data:image/jpeg;base64,{{ $settings->bg_login }}" alt="Background Login" class="img-fluid">
+                            </div>
+                        @endif
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 </div>
 
