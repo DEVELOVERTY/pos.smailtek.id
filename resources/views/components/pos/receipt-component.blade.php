@@ -4,8 +4,8 @@
         <div id="receipt-content" class="text-left w-full text-sm p-6 overflow-auto">
             <div class="text-center">
                 <img src="{{asset('pointofsale/img/receipt-logo.png')}}" alt="Tailwind POS" class="mb-3 w-8 h-8 inline-block">
-                <h2 class="text-xl font-semibold">Netzen POS</h2>
-                <p>PT. Netzen Media Akses</p>
+                <h2 class="text-xl font-semibold">Smail POS</h2>
+                <p>CV. Smail Teknologi</p>
             </div>
             <div class="flex mt-4 text-xs">
                 <div class="flex-grow">No: <span x-text="receiptNo"></span></div>

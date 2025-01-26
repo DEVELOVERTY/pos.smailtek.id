@@ -1318,3 +1318,4 @@ $('#paymodal').on('hidden.bs.modal', function () {
     console.log('modal closed');
     // You can also perform other actions here
   });
+
