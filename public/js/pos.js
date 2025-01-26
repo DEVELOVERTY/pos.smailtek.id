@@ -1325,7 +1325,7 @@ function printpage() {
     var originalContents = document.body.innerHTML;
     var printWindow = window.open('', '', 'height=600,width=800');
     printWindow.document.write('<html><head><title>Print Receipt</title>');
-    printWindow.document.write('<style>@media print { body { margin: 0; } .page-break { page-break-before: always; } }</style>');
+    printWindow.document.write('<style>@media print { body { margin: 0; } .page-break { page-break-before: always; } @page { size: A4; margin: 20mm; } table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid black; padding: 5px; text-align: left; } }</style>');
     printWindow.document.write('</head><body>');
     printWindow.document.write(divToPrint);
     printWindow.document.write('</body></html>');
