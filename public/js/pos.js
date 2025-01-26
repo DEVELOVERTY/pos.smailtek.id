@@ -1326,4 +1326,5 @@ function printpage() {
     document.body.innerHTML = divToPrint;
     window.print();
     document.body.innerHTML = originalContents;
+    location.reload();
 }
