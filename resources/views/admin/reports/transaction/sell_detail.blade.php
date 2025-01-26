@@ -23,11 +23,13 @@
                             <div class="row invoice-info">
                                 <div class="col-sm-4 invoice-col">
                                     {{__('sidebar.customer')}} :
+                                    @if(!empty($data->customer))     
                                     <address>
                                         {{ $data->customer->name ?? '' }},
                                         {{ $data->customer->city ?? '' . ' ' . $data->customer->address ?? '' }}
-                                        <br>{{__("general.phone")}}: {{ $data->customer->phone ?? '' }}
+                                        <br>{{__("general.phone")}}: {{ $data->customer->phone ?? '' }} 
                                     </address>
+                                    @endif
                                 </div>
 
                                 <div class="col-sm-4 invoice-col">
