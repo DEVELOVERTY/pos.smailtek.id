@@ -1323,8 +1323,14 @@ $('#paymodal').on('hidden.bs.modal', function () {
 function printpage() {
     var divToPrint = document.getElementById("receiptbody").innerHTML;
     var originalContents = document.body.innerHTML;
-    document.body.innerHTML = divToPrint;
-    window.print();
-    document.body.innerHTML = originalContents;
+    var printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Print Receipt</title>');
+    printWindow.document.write('<style>@media print { body { margin: 0; } .page-break { page-break-before: always; } }</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(divToPrint);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.close();
     // location.reload();
 }
