@@ -56,7 +56,7 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
             <div class="modal-content" style="height: 90vh; width:50vh">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="receipt">Receipt Struck</h4>
+                    <h4 class="modal-title" id="receipts">Receipt Struck</h4>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fa fa-times text-white"></i>
                     </button>
