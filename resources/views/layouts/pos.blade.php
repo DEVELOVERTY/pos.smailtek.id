@@ -69,6 +69,10 @@
                         <i class="bx bx-x d-block d-sm-none"></i>
                         <span class="d-none d-sm-block">{{__('pos.print')}}</span>
                     </button>
+                    <button type="button" class="btn btn-block btn-primary pageprint" onclick="printpage(this.id)">
+                        <i class="bx bx-x d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">{{__('pos.print_page')}}</span>
+                    </button>
                     <button type="button" id="closeprint" class="btn btn-block btn-light-secondary"
                         data-bs-dismiss="modal">
                         <i class="bx bx-x d-block d-sm-none"></i>

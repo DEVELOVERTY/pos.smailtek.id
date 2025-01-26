@@ -1319,3 +1319,12 @@ $('#paymodal').on('hidden.bs.modal', function () {
     // You can also perform other actions here
   });
 
+
+function printpage() {
+    var divToPrint = document.getElementById("receiptbody").innerHTML;
+    var originalContents = document.body.innerHTML;
+    document.body.innerHTML = divToPrint;
+    window.print();
+    document.body.innerHTML = originalContents;
+    // location.reload();
+}
