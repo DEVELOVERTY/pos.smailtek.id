@@ -87,7 +87,7 @@
                                                 <span class="badge bg-danger"><i class="fas fa-times"></i></span>
                                                 @endif
                                             </td>
-                                            <td>{{ $c->user->name }}</td>
+                                            <td>{{ $c->store->name }}</td>
                                             <td>{{ $c->today_checkint($date) }}</td>
                                             <td>{{ $c->today_checkout($date) }}</td>
                                             <td>{{ $c->today_late($date) }}</td>
