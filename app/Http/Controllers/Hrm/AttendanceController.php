@@ -196,7 +196,7 @@ class AttendanceController extends Controller
         }
 
         $day_       = cal_days_in_month($calendar, $month_, $year_);
-        return view('admin.reports.attendance.month', ['page' => __('sidebar.r_today_attendance')], compact('data', 'designation', 'date', 'month', 'year', 'month_', 'year_', 'day_'));
+        return view('admin.reports.attendance.month', ['page' => __('sidebar.month_attendance')], compact('data', 'designation', 'date', 'month', 'year', 'month_', 'year_', 'day_'));
     }
 
     public function report_total(Request $request)
