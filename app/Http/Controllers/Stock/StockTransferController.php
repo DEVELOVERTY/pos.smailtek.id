@@ -213,7 +213,7 @@ class StockTransferController extends Controller
 
         $data->created_by   = Auth()->user()->id;
         $data->invoice_no   = rand();
-        $data->ref_no       = "TRANSFER-" . $request->ref_no;
+        $data->ref_no       = "TF-" . str_replace(' ','',$request->ref_no);
         $data->transaction_date = date('Y-m-d');
 
         $data->total_before_tax = $request->amount_total;

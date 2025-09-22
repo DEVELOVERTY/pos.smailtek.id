@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
 
 class SellController extends Controller
 {
@@ -341,126 +342,74 @@ class SellController extends Controller
     }
 
     public function report(Request $request)
-    {
-        $data = Transaction::join('transaction_payments', 'transactions.id', '=', 'transaction_payments.transaction_id')
-            ->where('type', 'sell')
-            ->where("status", "!=", "hold")
-            ->whereNull('transactions.deleted_at')
-            ->orderBy('transactions.id', 'desc')
-            ->paginate(20);
-        $our = Transaction::join('transaction_payments', 'transactions.id', '=', 'transaction_payments.transaction_id')
-            ->where('type', 'sell')
-            ->where("status", "!=", "hold")
-            ->whereNull('transactions.deleted_at')
-            ->orderBy('transactions.id', 'desc')
-            ->get();
-        $user = User::all();
-        $store = Store::all();
-        $customer = Customer::all();
-        $payment = [
-            'paid'  => 'Terbayar',
-            'due'   => 'Hutang',
-        ];
+{
+    // --- Query dasar ---
+    $query = Transaction::select(
+            'transactions.*',
+            DB::raw('COALESCE(SUM(transaction_payments.amount),0) as pay_total'),
+            DB::raw('(transactions.final_total - COALESCE(SUM(transaction_payments.amount),0)) as due_total'),
+            DB::raw('MAX(transaction_payments.method) as method')
+        )
+        ->leftJoin('transaction_payments', 'transactions.id', '=', 'transaction_payments.transaction_id')
+        ->where('transactions.type', 'sell')
+        ->where('transactions.status', '!=', 'hold')
+        ->whereNull('transactions.deleted_at')
+        ->groupBy('transactions.id')
+        ->orderBy('transactions.id', 'desc');
 
-        $status = [
-            'due'   => __('general.sell_due'),
-            "paid"  => __('general.paid'),
-            'final' => __('general.paid')
-        ];
-
-        $jumlahTotal = 0;
-        $jumlahHutang = 0;
-        $jumlahTerbayar = 0;
-        $jumlahProfit = 0;
-        foreach ($our as $d) {
-            $jumlahProfit += $d->profit;
-            $jumlahTotal += $d->final_total;
-            $jumlahHutang += $d->due_total;
-            $jumlahTerbayar += Helper::fresh_aprice($d->pay_total);
-        }
-        if ($request->store != null || $request->customer != null || $request->payment != null || $request->start_date || $request->createdby != null) {
-            $data = Transaction::where(function ($query) use ($request) {
-                return $request->store ?
-                    $query->where('store_id', $request->store) : '';
-            })->where(function ($query) use ($request) {
-                return $request->customer ?
-                    $query->where('customer_id', $request->customer) : '';
-            })->where(function ($query) use ($request) {
-                return $request->payment ?
-                    $query->where('payment_status', $request->payment) : '';
-            })->where(function ($query) use ($request) {
-                return $request->createdby ?
-                    $query->where('created_by', $request->createdby) : '';
-            })->where(function ($query) use ($request) {
-                return $request->start_date ?
-                    $query->whereBetween('created_at', [$request->start_date, $request->end_date]) : '';
-            })->where("status", "!=", "hold")->where('type', 'sell')->paginate(20);
-            $our = Transaction::where(function ($query) use ($request) {
-                return $request->store ?
-                    $query->where('store_id', $request->store) : '';
-            })->where(function ($query) use ($request) {
-                return $request->customer ?
-                    $query->where('customer_id', $request->customer) : '';
-            })->where(function ($query) use ($request) {
-                return $request->payment ?
-                    $query->where('payment_status', $request->payment) : '';
-            })->where(function ($query) use ($request) {
-                return $request->start_date ?
-                    $query->whereBetween('created_at', [$request->start_date, $request->end_date]) : '';
-            })->where(function ($query) use ($request) {
-                return $request->createdby ?
-                    $query->where('created_by', $request->createdby) : '';
-            })->where("status", "!=", "hold")->where('type', 'sell')->get();
-            $data->appends([
-                'store'  => $request->store,
-                'customer'  => $request->customer,
-                'payment' => $request->payment,
-                'status'    => $request->status,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date
-            ]);
-
-            $jumlahTotal = 0;
-            $jumlahHutang = 0;
-            $jumlahTerbayar = 0;
-            $jumlahProfit = 0;
-            foreach ($our as $d) {
-                $jumlahTotal += $d->final_total;
-                $jumlahHutang += $d->due_total;
-                $jumlahTerbayar += Helper::fresh_aprice($d->pay_total);
-                $jumlahProfit += $d->profit;
-            }
-           // dd($data);
-        }
-
-        if ($request->ajax()) {
-            return view('admin.reports.transaction.sell_page', ['page' => __('sidebar.sell_report')], compact(
-                'data',
-                'store',
-                'customer',
-                'jumlahTotal',
-                'jumlahHutang',
-                'jumlahTerbayar',
-                'payment',
-                'jumlahProfit',
-                'user',
-                'status'
-            ));
-        }
-
-        return view('admin.reports.transaction.sell', ['page' => __('sidebar.sell_report')], compact(
-            'data',
-            'store',
-            'customer',
-            'jumlahTotal',
-            'jumlahHutang',
-            'jumlahTerbayar',
-            'payment',
-            'jumlahProfit',
-            'user',
-            'status'
-        ));
+    // --- Filter ---
+    if ($request->store) $query->where('transactions.store_id', $request->store);
+    if ($request->customer) $query->where('transactions.customer_id', $request->customer);
+    if ($request->payment) $query->where('transactions.payment_status', $request->payment);
+    if ($request->createdby) $query->where('transactions.created_by', $request->createdby);
+    if ($request->start_date && $request->end_date) {
+        $query->whereBetween('transactions.created_at', [$request->start_date, $request->end_date]);
     }
+
+    // --- Pagination untuk tabel ---
+    $data = (clone $query)->paginate(20);
+    
+    // --- Ambil semua untuk summary ---
+    $allTransactions = (clone $query)->get();
+
+    // --- Hitung totals ---
+    $jumlahTotal = $allTransactions->sum(fn($t) => (float) $t->final_total);
+    $jumlahTerbayar = $allTransactions->sum(fn($t) => (float) $t->pay_total);
+    $jumlahHutang = $allTransactions->sum(fn($t) => (float) $t->due_total);
+    $jumlahProfit = $allTransactions->sum(fn($t) => (float) $t->final_total - (float) ($t->total_modal ?? 0));
+
+    // --- Data tambahan ---
+    $user = User::all();
+    $store = Store::all();
+    $customer = Customer::all();
+
+    $payment = [
+        'paid'  => 'Terbayar',
+        'due'   => 'Hutang',
+    ];
+
+    $status = [
+        'due'   => __('general.sell_due'),
+        'paid'  => __('general.paid'),
+        'final' => __('general.paid')
+    ];
+
+    // --- Appends pagination ---
+    $data->appends($request->only('store','customer','payment','createdby','start_date','end_date'));
+
+    // --- Return view ---
+    $viewData = compact(
+        'data','store','customer','jumlahTotal','jumlahHutang','jumlahTerbayar',
+        'payment','jumlahProfit','user','status'
+    );
+
+    if ($request->ajax()) {
+        return view('admin.reports.transaction.sell_page', ['page' => __('sidebar.sell_report')], $viewData);
+    }
+
+    return view('admin.reports.transaction.sell', ['page' => __('sidebar.sell_report')], $viewData);
+}
+
 
     public function detail($id)
     {

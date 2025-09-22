@@ -34,7 +34,7 @@
                                     <div class="col-md-6 col-sm-12">
                                         <div class="input-group" style="height: 8vh;">
                                             <span class="input-group-text" id="dibayarkan">Dibayarkan</span>
-                                            <input type="text" class="form-control" id="on_pay" name="on_pay" min="0" value="0">
+                                            <input type="text" class="form-control" id="on_pay" name="on_pay" value="0">
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-sm-12 non-sidik" id="duepay">

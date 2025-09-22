@@ -61,7 +61,8 @@
            
             <th style="text-align:right;"><b>{{ number_format($jumlahTerbayar) }}</b></th>
             <th style="text-align:right;"></th>
-            <th style="text-align:right;"><b>{{ number_format($jumlahHutang) }}</b></th>
+            {{-- <th style="text-align:right;"><b>{{ number_format($jumlahHutang) }}</b></th> --}}
+            <th></th>
             <th></th>
             <th></th>
         </tr>
