@@ -36,7 +36,7 @@ return [
     |
     */
 
-    'service' => null,
+    'service' => 'ipapi',
 
     /*
     |--------------------------------------------------------------------------
@@ -48,6 +48,11 @@ return [
     */
 
     'services' => [
+
+        'ipapi' => [
+            'class' => \Torann\GeoIP\Services\IPApi::class,
+            'secure' => true,
+        ],
 
         'maxmind_database' => [
             'class' => \Torann\GeoIP\Services\MaxMindDatabase::class,
@@ -102,7 +107,7 @@ return [
     |
     */
 
-    'cache' => 'all',
+    'cache' => 'none',
 
     /*
     |--------------------------------------------------------------------------
@@ -137,19 +142,19 @@ return [
     */
 
     'default_location' => [
-        'ip' => '127.0.0.0',
-        'iso_code' => 'US',
-        'country' => 'United States',
-        'city' => 'New Haven',
-        'state' => 'CT',
-        'state_name' => 'Connecticut',
-        'postal_code' => '06510',
-        'lat' => 41.31,
-        'lon' => -72.92,
-        'timezone' => 'America/New_York',
-        'continent' => 'NA',
+        'ip' => '127.0.0.1',
+        'iso_code' => 'ID',
+        'country' => 'Indonesia',
+        'city' => 'Jakarta',
+        'state' => 'DKI',
+        'state_name' => 'DKI Jakarta',
+        'postal_code' => '10110',
+        'lat' => -6.2088,
+        'lon' => 106.8456,
+        'timezone' => 'Asia/Jakarta',
+        'continent' => 'AS',
         'default' => true,
-        'currency' => 'USD',
+        'currency' => 'IDR',
     ],
 
 ];

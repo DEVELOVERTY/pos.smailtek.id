@@ -492,6 +492,9 @@
                             <a href="{{ route('user.index') }}">{{__('sidebar.user')}}</a>
                         </li>
                         @endcan
+                        <li class="submenu-item {{ request()->is('pos-admin/system/store-tokens*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('admin.store-tokens.index') }}">Token Toko</a>
+                        </li>
                     </ul>
                 </li>
                 @endif
@@ -558,6 +561,7 @@
                             <a href="{{ route('brand.index') }}">{{ __('sidebar.brand') }}</a>
                         </li>
                         @endcan
+
 
                         <li class="submenu-item">
                             <a href="{{ route('setting.import') }}">Import Master Data</a>

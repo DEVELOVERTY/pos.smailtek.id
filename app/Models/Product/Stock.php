@@ -10,6 +10,13 @@ class Stock extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = [
+        'product_id',
+        'variation_id', 
+        'store_id',
+        'qty_available'
+    ];
+
     public function variation()
     {
         return $this->belongsTo(Variation::class, 'variation_id')->withTrashed();

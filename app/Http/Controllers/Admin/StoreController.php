@@ -9,6 +9,7 @@ use App\Models\Admin\Cuurency;
 use App\Models\Admin\Printer;
 use App\Models\Admin\Setting;
 use App\Models\Admin\Store;
+use App\Models\Admin\StoreToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -21,7 +22,7 @@ class StoreController extends Controller
     public function index()
     {
         $setting = Setting::first();
-        $data = Store::all();
+        $data = Store::with('storeToken')->get(); // Load token untuk setiap toko
 
         if (Auth()->user()->store_id != '0') {
             return redirect()->route('choose.store', Auth()->user()->store_id);

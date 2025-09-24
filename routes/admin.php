@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SettingsHrmController;
 use App\Http\Controllers\Admin\StoreController;
+use App\Http\Controllers\Admin\StoreTokenController;
 use App\Http\Controllers\Admin\TaxrateController;
 use App\Http\Controllers\Admin\TimezoneController;
 use App\Http\Controllers\Admin\UsersController;
@@ -135,6 +136,12 @@ Route::middleware('auth')->group(function () {
             Route::get('brand-update/{id}', [BrandController::class, 'update'])->name('brand.update');
             Route::get('brand-delete/{id}', [BrandController::class, 'delete'])->name('brand.delete');
             Route::post('brand-store/{any}', [BrandController::class, 'store'])->name('brand.store');
+
+            // Store Tokens
+            Route::get('store-tokens', [StoreTokenController::class, 'index'])->name('admin.store-tokens.index');
+            Route::get('store-tokens/{store}/edit', [StoreTokenController::class, 'edit'])->name('admin.store-tokens.edit');
+            Route::put('store-tokens/{store}', [StoreTokenController::class, 'update'])->name('admin.store-tokens.update');
+            Route::get('store-tokens/generate', [StoreTokenController::class, 'generateToken'])->name('admin.store-tokens.generate');
 
             // Import Master Data
             Route::get("import",[SettingController::class,'import'])->name('setting.import');

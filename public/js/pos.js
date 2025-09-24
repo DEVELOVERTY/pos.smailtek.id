@@ -1174,15 +1174,68 @@ function proses_sidik() {
 
 
 const apiDomain = "https://admin.sidikty.com/api";
-const posDomain = window.location.protocol + "//" + window.location.hostname;
+const posDomain = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
 var transactionCode = null;
 var _token = document.querySelector('meta[name="csrf-token"]').getAttribute('content') || $('meta[name="csrf-token"]').attr('content');
 var namaUser, saldo, id_usercard;
 var total;
 
 async function isBarcodeValid(barcode) {
+    console.log('Validating barcode:', barcode);
+    console.log('POS Domain:', posDomain);
+    
+    // Gunakan endpoint POS yang sudah ada untuk validasi barcode
     $.ajax({
-        url: `${apiDomain}/is-barcode-valid`,
+        url: `${posDomain}/api/is-transaction-fingerprint-verified/${barcode}`,
+        type: 'GET',
+        dataType: 'json',
+        headers: {
+            "Accept": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+        },
+        success: function(response) {
+            console.log('Barcode validation response:', response);
+            
+            // Response dari endpoint POS: {"status":"success","data":true/false}
+            if (response.status === 'success' && response.data === true) {
+                console.log('Barcode valid, getting user data...');
+                // Barcode valid, sekarang ambil data user dari Kedit
+                getUserDataFromKedit(barcode);
+            } else {
+                console.log('Barcode invalid:', response);
+                // Barcode tidak valid
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Barcode salah atau belum diverifikasi',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                $('#barcode_rfid_sidik').val('');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', {
+                status: status,
+                error: error,
+                responseText: xhr.responseText,
+                url: `${posDomain}/api/is-transaction-fingerprint-verified/${barcode}`
+            });
+            
+            Swal.fire({
+                title: 'Error',
+                text: 'Gagal memvalidasi barcode: ' + error + ' (Status: ' + status + ')',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            $('#barcode_rfid_sidik').val('');
+        }
+    });
+}
+
+// Fungsi untuk mengambil data user dari Kedit berdasarkan barcode
+async function getUserDataFromKedit(barcode) {
+    $.ajax({
+        url: `${apiDomain}/get-user-by-barcode`,
         type: 'POST',
         contentType: 'application/json',
         headers: {
@@ -1194,7 +1247,7 @@ async function isBarcodeValid(barcode) {
             'barcode': barcode,
         }),
         success: function(response) {
-            if (response.data.userCardId != null) {
+            if (response.data && response.data.userCardId != null) {
                 namaUser = response.data.namaUser;
                 saldo = response.data.saldo;
                 id_usercard = response.data.userCardId;
@@ -1255,17 +1308,27 @@ async function isBarcodeValid(barcode) {
             } else {
                 Swal.fire({
                     title: 'Error',
-                    text: 'Barcode salah',
+                    text: 'Data user tidak ditemukan',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
                 $('#barcode_rfid_sidik').val('');
             }
+        },
+        error: function(xhr, status, error) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Gagal mengambil data user: ' + error,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            $('#barcode_rfid_sidik').val('');
         }
     });
 }
 
 async function isValidasi(id_user_card) {
+    // Gunakan endpoint Kedit untuk validasi user
     let response = await fetch(`${apiDomain}/is-validasi`, {
         headers: {
             "Content-Type": "application/json",
@@ -1281,7 +1344,6 @@ async function isValidasi(id_user_card) {
     response = await response.json();
 
     return response.data;
-
 }
 
 

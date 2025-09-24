@@ -5,6 +5,7 @@ namespace App\Models\Admin;
 use App\Models\Hrm\Employee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Store extends Model
@@ -29,5 +30,10 @@ class Store extends Model
     public function printer()
     {
         return $this->belongsTo(Printer::class,'printer_id')->withTrashed();
+    }
+
+    public function storeToken()
+    {
+        return $this->hasOne(StoreToken::class,'store_id');
     }
 }

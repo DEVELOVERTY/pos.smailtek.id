@@ -54,7 +54,7 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'asset_url' => env('ASSET_URL', 'https://pos.smailtek.id/public'),
+    'asset_url' => env('ASSET_URL', 'https://sandbox-pos.smailtek.id/public'),
 
     /*
     |--------------------------------------------------------------------------
