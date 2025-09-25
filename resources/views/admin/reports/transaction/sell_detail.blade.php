@@ -111,7 +111,7 @@
                                                 @php
                                                 if(count($data->paycredit) == 0) {
                                                 echo ' <tr>
-                                                    <td colspan="5" class="text-center">No payments found </td>
+                                                    <td colspan="6" class="text-center">No payments found </td>
                                                 </tr>';
                                                 } else {
                                                 foreach ($data->paycredit as $pay) {
@@ -121,8 +121,12 @@
                                                 $method = 'Bank Transfer';
                                                 } else if($pay->method == 'card') {
                                                 $method = 'Card';
+                                                } else if($pay->method == 'sidik') {
+                                                $method = 'Kartu SiDiK';
                                                 } else if($pay->method == 'other') {
                                                 $method = __('report.other');
+                                                } else {
+                                                $method = ucfirst($pay->method);
                                                 }
                                                 echo '<tr>
                                                     <td>#</td>
@@ -139,7 +143,6 @@
 
                                             </tbody>
                                         </table>
-                                    </div>
                                 </div>
                                 <div class="col-md-6 col-sm-12 col-xs-12 ">
                                     <div class="table-responsive">

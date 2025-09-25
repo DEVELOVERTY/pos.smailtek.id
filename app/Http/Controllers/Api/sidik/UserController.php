@@ -1,11 +1,9 @@
 <?php
-
 namespace App\Http\Controllers\Api\Sidik;
 
 use App\Http\Controllers\Controller;
 use App\Models\LogFinger;
 use App\Models\Admin\StoreToken;
-use App\Models\Transaction\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -34,12 +32,12 @@ class UserController extends Controller
                 ]
             ]);
             
-            return response()->json([
-                'error' => 'TRANSAKSI DIHENTIKAN: Token toko tidak dikonfigurasi',
-                'error_code' => 'TOKEN_NOT_CONFIGURED',
-                'message' => 'Silakan hubungi admin untuk konfigurasi token toko',
-                'requires_admin' => true,
-                'severity' => 'high'
+            // Return HTML response untuk fingerprint verification
+            return response()->view('errors.token-not-configured', [
+                'error_message' => 'Token toko tidak dikonfigurasi',
+                'instructions' => 'Silakan hubungi admin untuk mengatur token toko di menu Token Toko',
+                'transaction_code' => $transactionCode,
+                'user_id' => $userId
             ], 400);
         }
         
@@ -59,13 +57,11 @@ class UserController extends Controller
                 ]
             ]);
             
-            return response()->json([
-                'error' => 'TRANSAKSI DIHENTIKAN: Sistem validasi tidak tersedia',
-                'error_code' => 'KEDIT_CONNECTION_ERROR',
-                'message' => 'Silakan hubungi admin - sistem Kedit tidak dapat diakses',
+            return response()->view('errors.kedit-connection-error', [
+                'error_message' => 'Sistem validasi tidak tersedia',
                 'details' => $validation['message'],
-                'requires_admin' => true,
-                'severity' => 'high'
+                'transaction_code' => $transactionCode,
+                'user_id' => $userId
             ], 500);
         }
         
@@ -113,23 +109,43 @@ class UserController extends Controller
         $time_limit_ver = 15;
         try {
             $keditBaseUrl = config('kedit.base_url');
+            
+            Log::info('Starting fingerprint verification process', [
+                'user_id' => $userId,
+                'transaction_code' => $transactionCode,
+                'store_token' => $storeToken,
+                'kedit_url' => $keditBaseUrl
+            ]);
+            
             $res = Http::withHeaders([
                 "Content-Type" => "application/json",
                 "Accept" => "application/json, text-plain, */*",
                 "X-Requested-With" => "XMLHttpRequest",
             ])
             ->timeout(10)
-            ->get($keditBaseUrl . '/api/user-card/' . $userId . '/fingerprint')
-            ->json();
+            ->get($keditBaseUrl . '/api/user-card/' . $userId . '/fingerprint');
+            
+            if (!$res->successful()) {
+                Log::error('Failed to get fingerprint from Kedit', [
+                    'status' => $res->status(),
+                    'body' => $res->body(),
+                    'url' => $keditBaseUrl . '/api/user-card/' . $userId . '/fingerprint'
+                ]);
+                throw new \Exception('Failed to get fingerprint: ' . $res->status());
+            }
+            
+            $fingerprintData = $res->json();
+            Log::info('Got fingerprint data from Kedit', $fingerprintData);
             
             // Enhanced response with store token and validation data
             $posBaseUrl = config('kedit.pos_base_url');
-            $response = $userId . "," . $transactionCode . ';' . $res['data'] . 
+            $response = $userId . "," . $transactionCode . ';' . $fingerprintData['data'] . 
                        ";SecurityKey;" . $time_limit_ver . ";" . 
                        $posBaseUrl . "/api/user/verify-fingerprint" . ";" . 
                        $keditBaseUrl . "/api/device-ac-sn-by-vc;" . 
                        $storeToken;
             
+            Log::info('Sending fingerprint verification response', ['response' => $response]);
             echo $response;
             
         } catch (\Exception $e) {
@@ -143,54 +159,113 @@ class UserController extends Controller
 
     public function processVerifyFingerprint()
     {
-        $data = explode(";", $_POST['VerPas']);
-        $userId = explode(',', $data[0])[0];
-        $transactionCode = explode(',', $data[0])[1];
-        $vStamp = $data[1];
-        $time = $data[2];
-        $sn = $data[3];
-
-        $keditBaseUrl = config('kedit.base_url');
-        $res = Http::withHeaders([
-            "Content-Type" => "application/json",
-            "Accept" => "application/json, text-plain, */*",
-            "X-Requested-With" => "XMLHttpRequest",
-        ])
-            // ->timeout(10)
-            ->get($keditBaseUrl . '/api/user-card/' . $userId . '/fingerprint')
-            ->json();
+        try {
+            Log::info('Processing fingerprint verification', ['POST_data' => $_POST]);
             
+            if (!isset($_POST['VerPas'])) {
+                Log::error('VerPas not found in POST data');
+                return response()->json(['error' => 'VerPas parameter missing'], 400);
+            }
+            
+            $data = explode(";", $_POST['VerPas']);
+            $userId = explode(',', $data[0])[0];
+            $transactionCode = explode(',', $data[0])[1];
+            $vStamp = $data[1];
+            $time = $data[2];
+            $sn = $data[3];
 
-        $fingerprint = $res['data'];
-
-        Log::debug($fingerprint);
-
-        $res = Http::withHeaders([
-            "Content-Type" => "application/json",
-            "Accept" => "application/json, text-plain, */*",
-            "X-Requested-With" => "XMLHttpRequest",
-        ])
-        // ->timeout(10)
-        ->get($keditBaseUrl . '/api/device/' . $sn)
-        ->json();
-
-        $device = $res['data'];
-        Log::debug($device);
-        $salt = md5($sn . $fingerprint . $device['vc'] . $time . $userId . ',' . $transactionCode . $device['vkey']);
-        if (strtoupper($vStamp) == strtoupper($salt)) {
-            // Transaction::where('id', $barcode)->update([
-            //     'is_fingerprint_verified' => true,
-            // ]);
-
-            LogFinger::create([
-                'barcode' => 'true',
-                'finger' => 'true',
+            Log::info('Parsed fingerprint verification data', [
+                'user_id' => $userId,
                 'transaction_code' => $transactionCode,
-                'store_id' => 1001,
+                'vStamp' => $vStamp,
+                'time' => $time,
+                'sn' => $sn
             ]);
-           
-        } else {
-            Log::debug('invalid fingerprint');
+
+            $keditBaseUrl = config('kedit.base_url');
+            
+            // Get fingerprint data
+            $res = Http::withHeaders([
+                "Content-Type" => "application/json",
+                "Accept" => "application/json, text-plain, */*",
+                "X-Requested-With" => "XMLHttpRequest",
+            ])
+            ->timeout(10)
+            ->get($keditBaseUrl . '/api/user-card/' . $userId . '/fingerprint');
+            
+            if (!$res->successful()) {
+                Log::error('Failed to get fingerprint from Kedit', [
+                    'status' => $res->status(),
+                    'body' => $res->body()
+                ]);
+                return response()->json(['error' => 'Failed to get fingerprint data'], 500);
+            }
+            
+            $fingerprintResponse = $res->json();
+            $fingerprint = $fingerprintResponse['data'];
+            Log::info('Got fingerprint data', ['fingerprint_length' => strlen($fingerprint)]);
+
+            // Get device data
+            $res = Http::withHeaders([
+                "Content-Type" => "application/json",
+                "Accept" => "application/json, text-plain, */*",
+                "X-Requested-With" => "XMLHttpRequest",
+            ])
+            ->timeout(10)
+            ->get($keditBaseUrl . '/api/device/' . $sn);
+            
+            if (!$res->successful()) {
+                Log::error('Failed to get device from Kedit', [
+                    'status' => $res->status(),
+                    'body' => $res->body(),
+                    'sn' => $sn
+                ]);
+                return response()->json(['error' => 'Failed to get device data'], 500);
+            }
+            
+            $deviceResponse = $res->json();
+            $device = $deviceResponse['data'];
+            Log::info('Got device data', ['device' => $device]);
+            
+            // Verify fingerprint
+            $salt = md5($sn . $fingerprint . $device['vc'] . $time . $userId . ',' . $transactionCode . $device['vkey']);
+            Log::info('Fingerprint verification', [
+                'calculated_salt' => strtoupper($salt),
+                'received_vStamp' => strtoupper($vStamp),
+                'match' => strtoupper($vStamp) == strtoupper($salt)
+            ]);
+            
+            if (strtoupper($vStamp) == strtoupper($salt)) {
+                $currentStoreId = session('mystore') ?? 1;
+                
+                LogFinger::create([
+                    'barcode' => 'true',
+                    'finger' => 'true',
+                    'transaction_code' => $transactionCode,
+                    'store_id' => $currentStoreId,
+                ]);
+                
+                Log::info('Fingerprint verification successful', [
+                    'transaction_code' => $transactionCode,
+                    'user_id' => $userId,
+                    'store_id' => $currentStoreId
+                ]);
+                
+                return response()->json(['success' => true, 'message' => 'Fingerprint verified successfully']);
+            } else {
+                Log::warning('Fingerprint verification failed - salt mismatch', [
+                    'transaction_code' => $transactionCode,
+                    'user_id' => $userId
+                ]);
+                return response()->json(['error' => 'Fingerprint verification failed'], 400);
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('Exception in processVerifyFingerprint', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Internal server error'], 500);
         }
     }
 
@@ -202,13 +277,23 @@ class UserController extends Controller
         $currentStoreId = session('mystore');
         
         if ($currentStoreId) {
-            $storeToken = StoreToken::where('store_id', $currentStoreId)->first();
-            return $storeToken ? $storeToken->token : null;
+            try {
+                $storeToken = StoreToken::where('store_id', $currentStoreId)->first();
+                return $storeToken ? $storeToken->token : null;
+            } catch (\Exception $e) {
+                Log::error('Error accessing store token in UserController: ' . $e->getMessage());
+                return null;
+            }
         }
         
-        // Fallback: get first available token (for testing)
-        $storeToken = StoreToken::first();
-        return $storeToken ? $storeToken->token : null;
+        // Jika tidak ada store ID di session, coba ambil token pertama yang tersedia
+        try {
+            $storeToken = StoreToken::first();
+            return $storeToken ? $storeToken->token : null;
+        } catch (\Exception $e) {
+            Log::error('Error accessing any store token in UserController: ' . $e->getMessage());
+            return null;
+        }
     }
 
     /**
@@ -218,7 +303,7 @@ class UserController extends Controller
     {
         try {
             $keditBaseUrl = config('kedit.base_url');
-            $response = Http::timeout(10)->post($keditBaseUrl . '/api/user-card/is-validasi', [
+            $response = Http::timeout(10)->post($keditBaseUrl . '/api/is-validasi', [
                 'id_user_card' => $userId,
                 'token_mart' => $storeToken
             ]);

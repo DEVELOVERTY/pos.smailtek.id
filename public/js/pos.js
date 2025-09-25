@@ -929,6 +929,21 @@ $("form.cTransaction").on("submit", function (e) {
     spinner.show();
     e.preventDefault();
     var formData = new FormData(this);
+    
+    // Add transaction_code and id_usercard for SIDIK payments
+    if (transactionCode) {
+        formData.append('transaction_code', transactionCode);
+    }
+    if (id_usercard) {
+        formData.append('id_usercard', id_usercard);
+    }
+    
+    console.log('Form data being sent:', {
+        transaction_code: transactionCode,
+        id_usercard: id_usercard,
+        barcode_rfid_sidik: formData.get('barcode_rfid_sidik')
+    });
+    
     setTimeout(function () {
         $.ajax({
             url: domain + domainpath + "/pos/store",
@@ -1235,7 +1250,7 @@ async function isBarcodeValid(barcode) {
 // Fungsi untuk mengambil data user dari Kedit berdasarkan barcode
 async function getUserDataFromKedit(barcode) {
     $.ajax({
-        url: `${apiDomain}/get-user-by-barcode`,
+        url: `${posDomain}/pos/get-user-by-barcode`,
         type: 'POST',
         contentType: 'application/json',
         headers: {
@@ -1316,9 +1331,27 @@ async function getUserDataFromKedit(barcode) {
             }
         },
         error: function(xhr, status, error) {
+            console.error('AJAX Error:', {
+                status: status,
+                error: error,
+                responseText: xhr.responseText,
+                url: `${posDomain}/pos/get-user-by-barcode`
+            });
+            
+            let errorMessage = 'Gagal mengambil data user';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.status === 0) {
+                errorMessage = 'Tidak dapat terhubung ke server. Pastikan server berjalan.';
+            } else if (xhr.status === 404) {
+                errorMessage = 'Endpoint tidak ditemukan. Periksa konfigurasi route.';
+            } else if (xhr.status === 500) {
+                errorMessage = 'Server error. Periksa log server untuk detail.';
+            }
+            
             Swal.fire({
                 title: 'Error',
-                text: 'Gagal mengambil data user: ' + error,
+                text: errorMessage + ' (Status: ' + xhr.status + ')',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -1328,8 +1361,8 @@ async function getUserDataFromKedit(barcode) {
 }
 
 async function isValidasi(id_user_card) {
-    // Gunakan endpoint Kedit untuk validasi user
-    let response = await fetch(`${apiDomain}/is-validasi`, {
+    // Gunakan endpoint POS untuk validasi user
+    let response = await fetch(`${posDomain}/pos/validate-user`, {
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json, text-plain, */*",
