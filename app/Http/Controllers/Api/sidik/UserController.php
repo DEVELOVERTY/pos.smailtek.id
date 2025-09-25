@@ -156,7 +156,7 @@ class UserController extends Controller
             "Accept" => "application/json, text-plain, */*",
             "X-Requested-With" => "XMLHttpRequest",
         ])
-            ->timeout(10)
+            // ->timeout(10)
             ->get($keditBaseUrl . '/api/user-card/' . $userId . '/fingerprint')
             ->json();
             
@@ -170,7 +170,7 @@ class UserController extends Controller
             "Accept" => "application/json, text-plain, */*",
             "X-Requested-With" => "XMLHttpRequest",
         ])
-        ->timeout(10)
+        // ->timeout(10)
         ->get($keditBaseUrl . '/api/device/' . $sn)
         ->json();
 

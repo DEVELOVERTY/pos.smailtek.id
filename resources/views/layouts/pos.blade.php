@@ -97,6 +97,9 @@
     <script src="{{ asset('assets/vendors/select3/dist/js/select2.full.min.js') }}"></script>
     <script src="{{ asset('js/lang.js') }}"></script>
     <script src="{{ asset('js/connection.js') }}"></script>
+    <script>
+        window.keditBaseUrl = "{{ config('kedit.base_url') }}";
+    </script>
     <script src="{{ asset('js/pos.js') }}"></script>
     <script src="{{ asset('js/mobile.js')}}"></script> 
 </body>
