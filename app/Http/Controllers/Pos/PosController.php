@@ -713,7 +713,7 @@ class PosController extends Controller
     }
 
     /**
-     * Test connection to Sidik server
+     * Test connection to Sidik server with comprehensive endpoint testing
      */
     public function testSidikConnection()
     {
@@ -722,38 +722,112 @@ class PosController extends Controller
         try {
             Log::info('Testing Sidik server connection', ['url' => $keditBaseUrl]);
             
-            // Test basic connection
-            $response = Http::timeout(10)->get($keditBaseUrl);
-            
             $result = [
-                'status' => $response->successful() ? 'success' : 'error',
-                'url' => $keditBaseUrl,
-                'http_status' => $response->status(),
-                'response_time' => 'N/A',
-                'message' => $response->successful() ? 'Connection successful' : 'Connection failed'
+                'environment' => strpos($keditBaseUrl, 'localhost') !== false || strpos($keditBaseUrl, '127.0.0.1') !== false ? 'local' : 'sandbox',
+                'base_url' => $keditBaseUrl,
+                'ssl_enabled' => strpos($keditBaseUrl, 'https') === 0,
+                'connection_test' => null,
+                'endpoints_test' => [],
+                'recommendations' => []
             ];
             
-            // Test validation endpoint
+            // Test basic connection with more details
             try {
-                $validationResponse = Http::timeout(5)->post($keditBaseUrl . '/api/is-validasi', [
-                    'id_user_card' => 'test',
-                    'token_mart' => 'test'
-                ]);
+                $startTime = microtime(true);
+                $response = Http::timeout(10)->get($keditBaseUrl);
+                $responseTime = round((microtime(true) - $startTime) * 1000, 2);
                 
-                $result['validation_endpoint'] = [
-                    'status' => $validationResponse->status(),
-                    'available' => $validationResponse->status() != 404,
-                    'message' => $validationResponse->status() == 404 ? 'Endpoint not found' : 'Endpoint available'
+                $result['connection_test'] = [
+                    'status' => $response->successful() ? 'success' : 'failed',
+                    'http_status' => $response->status(),
+                    'response_time_ms' => $responseTime,
+                    'headers' => $response->headers(),
+                    'body_preview' => substr($response->body(), 0, 200)
                 ];
+                
+                if (!$response->successful()) {
+                    $result['recommendations'][] = 'Basic connection failed. Check if Sidik server is running at ' . $keditBaseUrl;
+                }
             } catch (\Exception $e) {
-                $result['validation_endpoint'] = [
+                $result['connection_test'] = [
                     'status' => 'error',
-                    'available' => false,
-                    'message' => $e->getMessage()
+                    'error' => $e->getMessage(),
+                    'error_type' => get_class($e)
                 ];
+                $result['recommendations'][] = 'Connection error: ' . $e->getMessage();
             }
             
-            Log::info('Sidik connection test result', $result);
+            // Test critical endpoints used in the application
+            $criticalEndpoints = [
+                '/api/is-validasi' => ['id_user_card' => 1, 'token_mart' => 'test'],
+                '/api/is-barcode-valid' => ['barcode' => 'test123'],
+                '/api/get-merchant-by-token' => ['token_mart' => 'test'],
+                '/api/validate-merchant-token' => ['token_mart' => 'test'],
+                '/api/merchant/sync-token' => ['token' => 'test', 'store_id' => 1]
+            ];
+            
+            foreach ($criticalEndpoints as $endpoint => $testData) {
+                try {
+                    $startTime = microtime(true);
+                    $testResponse = Http::timeout(5)->post($keditBaseUrl . $endpoint, $testData);
+                    $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+                    
+                    $result['endpoints_test'][$endpoint] = [
+                        'status' => $testResponse->status(),
+                        'available' => $testResponse->status() != 404,
+                        'response_time_ms' => $responseTime,
+                        'response_preview' => substr($testResponse->body(), 0, 200),
+                        'test_data' => $testData
+                    ];
+                    
+                    // Add specific recommendations
+                    if ($testResponse->status() == 404) {
+                        $result['recommendations'][] = "Endpoint {$endpoint} not found (404). This endpoint is used in the application.";
+                    } elseif ($testResponse->status() >= 500) {
+                        $result['recommendations'][] = "Endpoint {$endpoint} has server error ({$testResponse->status()}).";
+                    }
+                    
+                } catch (\Exception $e) {
+                    $result['endpoints_test'][$endpoint] = [
+                        'status' => 'error',
+                        'available' => false,
+                        'error' => $e->getMessage(),
+                        'test_data' => $testData
+                    ];
+                }
+            }
+            
+            // Environment-specific recommendations
+            if ($result['environment'] === 'sandbox') {
+                $result['recommendations'][] = 'Testing sandbox environment. Ensure all endpoints are deployed and SSL certificates are valid.';
+                
+                if ($result['ssl_enabled'] && isset($result['connection_test']['status']) && $result['connection_test']['status'] === 'error') {
+                    $result['recommendations'][] = 'SSL connection issue detected. Check SSL certificate validity.';
+                }
+            } else {
+                $result['recommendations'][] = 'Testing local environment. Ensure Sidik server is running locally.';
+            }
+            
+            // Summary
+            $availableEndpoints = 0;
+            $totalEndpoints = count($criticalEndpoints);
+            
+            foreach ($result['endpoints_test'] as $endpoint => $data) {
+                if (isset($data['available']) && $data['available']) {
+                    $availableEndpoints++;
+                }
+            }
+            
+            $result['summary'] = [
+                'environment' => $result['environment'],
+                'connection_ok' => isset($result['connection_test']['status']) && $result['connection_test']['status'] === 'success',
+                'available_endpoints' => $availableEndpoints,
+                'total_endpoints' => $totalEndpoints,
+                'endpoint_availability' => round(($availableEndpoints / $totalEndpoints) * 100, 2) . '%',
+                'ready_for_transactions' => $availableEndpoints >= 2 // At least is-validasi and is-barcode-valid
+            ];
+            
+            Log::info('Sidik connection test completed', $result['summary']);
             
             return response()->json($result);
             
@@ -761,7 +835,7 @@ class PosController extends Controller
             $result = [
                 'status' => 'error',
                 'url' => $keditBaseUrl,
-                'message' => 'Connection failed: ' . $e->getMessage(),
+                'message' => 'Connection test failed: ' . $e->getMessage(),
                 'error_type' => get_class($e)
             ];
             
