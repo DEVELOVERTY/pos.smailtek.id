@@ -549,9 +549,26 @@ class PosController extends Controller
             }
 
             try {
-                Log::info('Calling Sidik validation endpoint: ' . $keditBaseUrl . '/api/is-validasi');
+                // Test connection to Sidik server first
+                Log::info('Testing connection to Sidik server', [
+                    'base_url' => $keditBaseUrl
+                ]);
                 
-                $response = Http::timeout(10)->post($keditBaseUrl . '/api/is-validasi', [
+                $testResponse = Http::timeout(5)->get($keditBaseUrl);
+                if (!$testResponse->successful()) {
+                    Log::warning('Sidik server connection test failed', [
+                        'status' => $testResponse->status(),
+                        'url' => $keditBaseUrl
+                    ]);
+                }
+                
+                Log::info('Calling Sidik validation endpoint', [
+                    'url' => $keditBaseUrl . '/api/is-validasi',
+                    'user_id' => $userId,
+                    'token' => substr($storeToken, 0, 10) . '...' // Log partial token for security
+                ]);
+                
+                $response = Http::timeout(15)->post($keditBaseUrl . '/api/is-validasi', [
                     'id_user_card' => $userId,
                     'token_mart' => $storeToken
                 ]);
@@ -637,17 +654,52 @@ class PosController extends Controller
                     
                     return $data;
                 } else {
-                    Log::error('Sidik validation API Error: ' . $response->status() . ' - ' . $response->body());
+                    Log::error('Sidik validation API Error', [
+                        'status' => $response->status(),
+                        'body' => $response->body(),
+                        'url' => $keditBaseUrl . '/api/is-validasi',
+                        'user_id' => $userId,
+                        'headers' => $response->headers()
+                    ]);
+                    
+                    // Return more specific error based on HTTP status
+                    $errorMessage = 'Server error. Hubungi admin sistem.';
+                    if ($response->status() == 404) {
+                        $errorMessage = 'Endpoint validasi tidak ditemukan.';
+                    } elseif ($response->status() == 401 || $response->status() == 403) {
+                        $errorMessage = 'Token tidak valid atau akses ditolak.';
+                    } elseif ($response->status() == 422) {
+                        $errorMessage = 'Data tidak valid untuk validasi.';
+                    }
+                    
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'Failed to validate user: ' . $response->status()
+                        'message' => $errorMessage
                     ], 500);
                 }
             } catch (\Exception $e) {
-                Log::error('Sidik validation connection error: ' . $e->getMessage());
+                Log::error('Sidik validation connection error', [
+                    'error' => $e->getMessage(),
+                    'url' => $keditBaseUrl . '/api/is-validasi',
+                    'user_id' => $userId,
+                    'trace' => $e->getTraceAsString()
+                ]);
+                
+                // Check if it's a specific connection issue
+                $errorMessage = 'Server error. Hubungi admin sistem.';
+                if (strpos($e->getMessage(), 'timeout') !== false) {
+                    $errorMessage = 'Koneksi timeout ke server Sidik. Coba lagi.';
+                } elseif (strpos($e->getMessage(), 'Connection refused') !== false) {
+                    $errorMessage = 'Server Sidik tidak dapat diakses.';
+                } elseif (strpos($e->getMessage(), 'Could not resolve host') !== false) {
+                    $errorMessage = 'Server Sidik tidak ditemukan.';
+                } elseif (strpos($e->getMessage(), 'SSL') !== false) {
+                    $errorMessage = 'Error SSL koneksi ke server Sidik.';
+                }
+                
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Cannot connect to Sidik validation system: ' . $e->getMessage()
+                    'message' => $errorMessage
                 ], 500);
             }
 
@@ -657,6 +709,65 @@ class PosController extends Controller
                 'status' => 'error',
                 'message' => 'Connection error: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Test connection to Sidik server
+     */
+    public function testSidikConnection()
+    {
+        $keditBaseUrl = config('kedit.base_url');
+        
+        try {
+            Log::info('Testing Sidik server connection', ['url' => $keditBaseUrl]);
+            
+            // Test basic connection
+            $response = Http::timeout(10)->get($keditBaseUrl);
+            
+            $result = [
+                'status' => $response->successful() ? 'success' : 'error',
+                'url' => $keditBaseUrl,
+                'http_status' => $response->status(),
+                'response_time' => 'N/A',
+                'message' => $response->successful() ? 'Connection successful' : 'Connection failed'
+            ];
+            
+            // Test validation endpoint
+            try {
+                $validationResponse = Http::timeout(5)->post($keditBaseUrl . '/api/is-validasi', [
+                    'id_user_card' => 'test',
+                    'token_mart' => 'test'
+                ]);
+                
+                $result['validation_endpoint'] = [
+                    'status' => $validationResponse->status(),
+                    'available' => $validationResponse->status() != 404,
+                    'message' => $validationResponse->status() == 404 ? 'Endpoint not found' : 'Endpoint available'
+                ];
+            } catch (\Exception $e) {
+                $result['validation_endpoint'] = [
+                    'status' => 'error',
+                    'available' => false,
+                    'message' => $e->getMessage()
+                ];
+            }
+            
+            Log::info('Sidik connection test result', $result);
+            
+            return response()->json($result);
+            
+        } catch (\Exception $e) {
+            $result = [
+                'status' => 'error',
+                'url' => $keditBaseUrl,
+                'message' => 'Connection failed: ' . $e->getMessage(),
+                'error_type' => get_class($e)
+            ];
+            
+            Log::error('Sidik connection test failed', $result);
+            
+            return response()->json($result, 500);
         }
     }
 
