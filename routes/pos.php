@@ -18,6 +18,7 @@ Route::middleware(['auth','store'])->group(function () {
     Route::post('sync-current-store-token', [PosController::class, 'syncCurrentStoreToken']);
     Route::get('validate-token-sync', [PosController::class, 'validateTokenSync']);
     Route::get('check-current-store-token-status', [PosController::class, 'checkCurrentStoreTokenStatus']);
+    Route::get('validate-token-with-sidik', [PosController::class, 'validateTokenWithSidik']);
     Route::post('auto-setup-token-for-debugging', [PosController::class, 'autoSetupTokenForDebugging']);
     Route::get('debug-payment-process', [PosController::class, 'debugPaymentProcess']);
     Route::prefix('product')->group(function () {

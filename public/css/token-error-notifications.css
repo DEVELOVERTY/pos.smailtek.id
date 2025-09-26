@@ -1,0 +1,233 @@
+/* Token Error Notification Styles */
+.token-error-popup {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.token-error-popup .swal2-title {
+    color: #dc3545 !important;
+    font-weight: 600;
+}
+
+.token-error-popup .swal2-html-container {
+    text-align: left !important;
+}
+
+.token-error-popup .swal2-html-container ul {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.token-error-popup .swal2-html-container li {
+    margin: 0.25rem 0;
+    color: #495057;
+}
+
+.token-error-popup .swal2-html-container hr {
+    margin: 1rem 0;
+    border-color: #dee2e6;
+}
+
+.token-error-popup .swal2-html-container strong {
+    color: #212529;
+}
+
+/* Payment Token Error Styles */
+.swal2-popup .alert {
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    border: 1px solid transparent;
+}
+
+.swal2-popup .alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+}
+
+.swal2-popup .alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+/* Admin Contact Info Styles */
+.swal2-popup .fa-user-shield {
+    color: #007bff !important;
+}
+
+.swal2-popup .fa-credit-card {
+    color: #dc3545 !important;
+}
+
+/* Button Styles */
+.swal2-confirm.swal2-styled {
+    background-color: #dc3545 !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3) !important;
+}
+
+.swal2-cancel.swal2-styled {
+    background-color: #6c757d !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3) !important;
+}
+
+.swal2-confirm.swal2-styled:hover {
+    background-color: #c82333 !important;
+    transform: translateY(-1px);
+}
+
+.swal2-cancel.swal2-styled:hover {
+    background-color: #5a6268 !important;
+    transform: translateY(-1px);
+}
+
+/* Loading Animation for Token Validation */
+.swal2-loading .swal2-title {
+    color: #007bff !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .token-error-popup {
+        width: 95% !important;
+        margin: 0 auto !important;
+    }
+    
+    .token-error-popup .swal2-html-container {
+        font-size: 0.9rem;
+    }
+}
+
+/* Animation for Error Icons */
+.swal2-icon.swal2-error {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Success Animation */
+.swal2-icon.swal2-success {
+    animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+    40%, 43% { transform: translateY(-10px); }
+    70% { transform: translateY(-5px); }
+    90% { transform: translateY(-2px); }
+}
+
+/* Token Validation Flow Styles */
+.token-validation-popup .swal2-title {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+}
+
+.token-validation-popup .fa-user-check {
+    color: #28a745 !important;
+}
+
+.token-validation-popup .fa-shield-alt {
+    color: #007bff !important;
+}
+
+.token-validation-popup .fa-check-circle {
+    color: #28a745 !important;
+}
+
+/* Progress Bar Styles */
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #e9ecef;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.progress-bar-striped {
+    background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
+    background-size: 1rem 1rem;
+}
+
+.progress-bar-animated {
+    animation: progress-bar-stripes 1s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
+    0% { background-position: 1rem 0; }
+    100% { background-position: 0 0; }
+}
+
+/* Timer Progress Bar */
+.swal2-timer-progress-bar {
+    background: linear-gradient(45deg, #28a745, #20c997) !important;
+}
+
+/* Alert Styles in SweetAlert */
+.swal2-popup .alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.swal2-popup .alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* Icon Animations */
+.fa-user-check {
+    animation: checkmark 0.8s ease-in-out;
+}
+
+.fa-shield-alt {
+    animation: shield-pulse 2s infinite;
+}
+
+@keyframes checkmark {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shield-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+/* Fingerprint Launch Styles */
+.fingerprint-launch .swal2-title {
+    color: #6f42c1 !important;
+}
+
+.fingerprint-launch .swal2-content {
+    color: #6c757d;
+}
+
+/* Loading Spinner Enhancement */
+.swal2-loading .swal2-loader {
+    border-color: #007bff transparent #007bff transparent;
+}
+
+/* Button Hover Effects */
+.swal2-confirm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.swal2-cancel:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}

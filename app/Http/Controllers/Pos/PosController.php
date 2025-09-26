@@ -358,7 +358,7 @@ class PosController extends Controller
     }
 
     /**
-     * Get user data by barcode from Kedit system
+     * Get user data by barcode from Sidik system
      */
     public function getUserByBarcode(Request $request)
     {
@@ -372,11 +372,11 @@ class PosController extends Controller
                 ], 400);
             }
 
-            // Call Kedit API to get user data
+            // Call Sidik API to get user data
             $keditBaseUrl = config('kedit.base_url');
             
             try {
-                Log::info('Calling Kedit endpoint: ' . $keditBaseUrl . '/api/is-barcode-valid');
+                Log::info('Calling Sidik endpoint: ' . $keditBaseUrl . '/api/is-barcode-valid');
                 
                 $response = Http::timeout(10)->post($keditBaseUrl . '/api/is-barcode-valid', [
                     'barcode' => $barcode
@@ -384,24 +384,24 @@ class PosController extends Controller
 
                 if ($response->successful()) {
                     $data = $response->json();
-                    Log::info('Success with Kedit API', $data);
+                    Log::info('Success with Sidik API', $data);
                     
                     return response()->json([
                         'status' => 'success',
                         'data' => $data['data'] ?? null
                     ]);
                 } else {
-                    Log::error('Kedit API Error: ' . $response->status() . ' - ' . $response->body());
+                    Log::error('Sidik API Error: ' . $response->status() . ' - ' . $response->body());
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'Failed to get user data from Kedit system: ' . $response->status()
+                        'message' => 'Failed to get user data from Sidik system: ' . $response->status()
                     ], 500);
                 }
             } catch (\Exception $e) {
-                Log::error('Kedit connection error: ' . $e->getMessage());
+                Log::error('Sidik connection error: ' . $e->getMessage());
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Cannot connect to Kedit system: ' . $e->getMessage()
+                    'message' => 'Cannot connect to Sidik system: ' . $e->getMessage()
                 ], 500);
             }
 
@@ -410,6 +410,112 @@ class PosController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Connection error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Validate barcode for SIDIK transactions
+     */
+    public function validateBarcodeForSidik($barcode)
+    {
+        try {
+            if (!$barcode) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Barcode is required'
+                ], 400);
+            }
+
+            // Get store token
+            $storeToken = $this->getCurrentStoreToken();
+            
+            if (!$storeToken) {
+                Log::warning('Store token not found for barcode validation', [
+                    'barcode' => $barcode,
+                    'store_id' => session('mystore'),
+                    'session_id' => session()->getId()
+                ]);
+                
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Store token not configured',
+                    'error_type' => 'token_not_found',
+                    'data' => false,
+                    'instructions' => 'Silakan hubungi admin untuk mengatur token toko di menu Token Toko'
+                ], 400);
+            }
+
+            // Call Sidik API to validate barcode
+            $keditBaseUrl = config('kedit.base_url');
+            
+            try {
+                Log::info('Validating barcode with Sidik: ' . $keditBaseUrl . '/api/is-barcode-valid', [
+                    'barcode' => $barcode,
+                    'store_token' => $storeToken
+                ]);
+                
+                $response = Http::timeout(15)->post($keditBaseUrl . '/api/is-barcode-valid', [
+                    'barcode' => $barcode,
+                    'token_mart' => $storeToken
+                ]);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    Log::info('Barcode validation response from Sidik', $data);
+                    
+                    // Check if barcode is valid
+                    if (isset($data['status']) && $data['status'] === 'success' && 
+                        isset($data['data']) && $data['data'] !== null) {
+                        
+                        return response()->json([
+                            'status' => 'success',
+                            'data' => true,
+                            'message' => 'Barcode valid'
+                        ]);
+                    } else {
+                        return response()->json([
+                            'status' => 'error',
+                            'data' => false,
+                            'message' => 'Barcode tidak valid atau tidak terdaftar'
+                        ]);
+                    }
+                } else {
+                    Log::error('Sidik barcode validation failed', [
+                        'status' => $response->status(),
+                        'body' => $response->body(),
+                        'barcode' => $barcode
+                    ]);
+                    
+                    return response()->json([
+                        'status' => 'error',
+                        'data' => false,
+                        'message' => 'Gagal validasi barcode: ' . $response->status()
+                    ], 500);
+                }
+            } catch (\Exception $e) {
+                Log::error('Sidik connection error during barcode validation', [
+                    'error' => $e->getMessage(),
+                    'barcode' => $barcode
+                ]);
+                
+                return response()->json([
+                    'status' => 'error',
+                    'data' => false,
+                    'message' => 'Tidak dapat terhubung ke sistem Sidik: ' . $e->getMessage()
+                ], 500);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Barcode validation error', [
+                'error' => $e->getMessage(),
+                'barcode' => $barcode
+            ]);
+            
+            return response()->json([
+                'status' => 'error',
+                'data' => false,
+                'message' => 'Error validasi barcode: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -429,7 +535,7 @@ class PosController extends Controller
                 ], 400);
             }
 
-            // Call Kedit API for validation
+            // Call Sidik API for validation
             $keditBaseUrl = config('kedit.base_url');
             
             // Get store token for validation
@@ -443,7 +549,7 @@ class PosController extends Controller
             }
 
             try {
-                Log::info('Calling Kedit validation endpoint: ' . $keditBaseUrl . '/api/is-validasi');
+                Log::info('Calling Sidik validation endpoint: ' . $keditBaseUrl . '/api/is-validasi');
                 
                 $response = Http::timeout(10)->post($keditBaseUrl . '/api/is-validasi', [
                     'id_user_card' => $userId,
@@ -452,20 +558,96 @@ class PosController extends Controller
 
                 if ($response->successful()) {
                     $data = $response->json();
-                    Log::info('Success with Kedit validation API', $data);
+                    Log::info('Success with Sidik validation API', $data);
+                    
+                    // Check if the response indicates token validation success
+                    if (!isset($data['status']) || $data['status'] !== 'success') {
+                        Log::error('Sidik API returned non-success status', [
+                            'response' => $data,
+                            'token' => $storeToken
+                        ]);
+                        
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Token validation failed: ' . ($data['message'] ?? 'Invalid response from Sidik'),
+                            'token_validation_failed' => true
+                        ], 400);
+                    }
+                    
+                    // Get merchant limit settings to determine if limit checking should be applied
+                    $merchantLimitActive = 'Y'; // Default to active (safe default)
+                    try {
+                        // Try to get merchant data from the validation response first
+                        if (isset($data['data']['merchant']) && isset($data['data']['merchant']['aktif_limit'])) {
+                            $merchantLimitActive = $data['data']['merchant']['aktif_limit'];
+                            Log::info('Merchant limit setting from validation response', [
+                                'limit_active' => $merchantLimitActive
+                            ]);
+                        } else {
+                            // Fallback: try separate merchant endpoint (might not exist)
+                            try {
+                                $merchantResponse = Http::timeout(5)->post($keditBaseUrl . '/api/get-merchant-by-token', [
+                                    'token_mart' => $storeToken
+                                ]);
+                                
+                                if ($merchantResponse->successful()) {
+                                    $merchantData = $merchantResponse->json();
+                                    if (isset($merchantData['data']['aktif_limit'])) {
+                                        $merchantLimitActive = $merchantData['data']['aktif_limit'];
+                                        Log::info('Merchant limit setting from separate endpoint', [
+                                            'merchant_id' => $merchantData['data']['id'] ?? null,
+                                            'merchant_name' => $merchantData['data']['nama_merchant'] ?? null,
+                                            'limit_active' => $merchantLimitActive
+                                        ]);
+                                    }
+                                } else if ($merchantResponse->status() === 404) {
+                                    Log::info('Merchant endpoint not available, using default limit setting');
+                                }
+                            } catch (\Exception $merchantException) {
+                                Log::info('Merchant endpoint not accessible, using default limit setting', [
+                                    'error' => $merchantException->getMessage()
+                                ]);
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        Log::warning('Error processing merchant limit settings, using default', [
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                    
+                    // Add merchant limit setting and token validation info to response
+                    if (isset($data['data'])) {
+                        $data['data']['merchant_limit_active'] = $merchantLimitActive;
+                        $data['data']['token_validated'] = true;
+                        $data['data']['token_validation_method'] = 'integrated_is_validasi';
+                        
+                        // If merchant limit is not active, override limit-related restrictions
+                        if ($merchantLimitActive === 'N') {
+                            Log::info('Merchant limit is disabled, allowing transaction regardless of user limit');
+                            $data['data']['limit_override'] = true;
+                            $data['data']['limit_override_reason'] = 'Merchant limit disabled';
+                            
+                            // Override limit-related fields to allow transaction
+                            if (isset($data['data']['sisa_limit']) && $data['data']['sisa_limit'] <= 0) {
+                                $data['data']['sisa_limit'] = 999999999; // Set to high value to bypass limit check
+                                $data['data']['original_sisa_limit'] = $data['data']['sisa_limit']; // Keep original for reference
+                            }
+                        }
+                    }
+                    
                     return $data;
                 } else {
-                    Log::error('Kedit validation API Error: ' . $response->status() . ' - ' . $response->body());
+                    Log::error('Sidik validation API Error: ' . $response->status() . ' - ' . $response->body());
                     return response()->json([
                         'status' => 'error',
                         'message' => 'Failed to validate user: ' . $response->status()
                     ], 500);
                 }
             } catch (\Exception $e) {
-                Log::error('Kedit validation connection error: ' . $e->getMessage());
+                Log::error('Sidik validation connection error: ' . $e->getMessage());
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Cannot connect to Kedit validation system: ' . $e->getMessage()
+                    'message' => 'Cannot connect to Sidik validation system: ' . $e->getMessage()
                 ], 500);
             }
 
@@ -506,7 +688,7 @@ class PosController extends Controller
     }
 
     /**
-     * Sync current store token with Kedit system
+     * Sync current store token with Sidik system
      */
     public function syncCurrentStoreToken()
     {
@@ -530,7 +712,7 @@ class PosController extends Controller
                 ], 404);
             }
 
-            // Sync dengan Kedit system
+            // Sync dengan Sidik system
             $keditBaseUrl = config('kedit.base_url');
             $response = Http::timeout(10)->post($keditBaseUrl . '/api/merchant/sync-token', [
                 'store_id' => $currentStoreId,
@@ -543,7 +725,7 @@ class PosController extends Controller
                 $data = $response->json();
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Store token synced successfully with Kedit system',
+                    'message' => 'Store token synced successfully with Sidik system',
                     'data' => [
                         'store_id' => $currentStoreId,
                         'store_name' => $store->name,
@@ -554,7 +736,7 @@ class PosController extends Controller
             } else {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Failed to sync with Kedit: ' . $response->body(),
+                    'message' => 'Failed to sync with Sidik: ' . $response->body(),
                     'status_code' => $response->status()
                 ], 500);
             }
@@ -563,6 +745,168 @@ class PosController extends Controller
                 'status' => 'error',
                 'message' => 'Sync error: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Strict token validation with Sidik system
+     */
+    public function validateTokenWithSidik()
+    {
+        try {
+            $currentStoreId = session('mystore');
+            
+            if (!$currentStoreId) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No store selected in session',
+                    'token_valid' => false,
+                    'validation_error' => 'Store session tidak ditemukan'
+                ]);
+            }
+
+            $store = \App\Models\Admin\Store::find($currentStoreId);
+            if (!$store) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Store not found',
+                    'token_valid' => false,
+                    'validation_error' => 'Store tidak ditemukan'
+                ]);
+            }
+
+            $storeToken = \App\Models\Admin\StoreToken::where('store_id', $currentStoreId)->first();
+            
+            if (!$storeToken) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Store token not configured',
+                    'token_valid' => false,
+                    'validation_error' => 'Token toko belum dikonfigurasi'
+                ]);
+            }
+
+            $keditBaseUrl = config('kedit.base_url');
+            
+            // Test connection first
+            try {
+                $connectionResponse = Http::timeout(5)->get($keditBaseUrl);
+                if (!$connectionResponse->successful()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Cannot connect to Sidik system',
+                        'token_valid' => false,
+                        'validation_error' => 'Tidak dapat terhubung ke sistem Sidik'
+                    ]);
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Sidik connection failed: ' . $e->getMessage(),
+                    'token_valid' => false,
+                    'validation_error' => 'Koneksi ke Sidik gagal: ' . $e->getMessage()
+                ]);
+            }
+
+            // Validate token using is-validasi endpoint (most reliable)
+            try {
+                Log::info('Strict token validation with Sidik', [
+                    'token' => $storeToken->token,
+                    'store_id' => $currentStoreId,
+                    'endpoint' => '/api/is-validasi'
+                ]);
+
+                $validationResponse = Http::timeout(15)->post($keditBaseUrl . '/api/is-validasi', [
+                    'id_user_card' => 1, // Test user for token validation
+                    'token_mart' => $storeToken->token
+                ]);
+
+                if ($validationResponse->successful()) {
+                    $validationData = $validationResponse->json();
+                    Log::info('Sidik token validation response', $validationData);
+
+                    if (isset($validationData['status']) && $validationData['status'] === 'success') {
+                        // Token is valid - extract merchant information
+                        $result = [
+                            'status' => 'success',
+                            'token_valid' => true,
+                            'validation_method' => 'sidik_is_validasi',
+                            'store_id' => $currentStoreId,
+                            'store_name' => $store->name,
+                            'token' => $storeToken->token
+                        ];
+
+                        // Extract merchant limit settings if available
+                        if (isset($validationData['data']['merchant'])) {
+                            $merchantData = $validationData['data']['merchant'];
+                            $result['merchant_limit_active'] = $merchantData['aktif_limit'] ?? 'Y';
+                            $result['merchant_name'] = $merchantData['nama_merchant'] ?? $store->name;
+                            $result['merchant_id'] = $merchantData['id'] ?? $currentStoreId;
+                        } else {
+                            // Default merchant settings
+                            $result['merchant_limit_active'] = 'Y';
+                            $result['merchant_name'] = $store->name;
+                            $result['merchant_id'] = $currentStoreId;
+                        }
+
+                        Log::info('Token validation successful', [
+                            'token' => $storeToken->token,
+                            'merchant_limit_active' => $result['merchant_limit_active'],
+                            'validation_method' => 'sidik_is_validasi'
+                        ]);
+
+                        return response()->json($result);
+                    } else {
+                        // Token validation failed
+                        Log::error('Token validation failed - invalid token', [
+                            'token' => $storeToken->token,
+                            'response' => $validationData
+                        ]);
+
+                        return response()->json([
+                            'status' => 'error',
+                            'token_valid' => false,
+                            'validation_error' => $validationData['message'] ?? 'Token tidak valid di sistem Sidik',
+                            'sidik_response' => $validationData
+                        ]);
+                    }
+                } else {
+                    // API call failed
+                    Log::error('Token validation API call failed', [
+                        'status' => $validationResponse->status(),
+                        'body' => $validationResponse->body(),
+                        'token' => $storeToken->token
+                    ]);
+
+                    return response()->json([
+                        'status' => 'error',
+                        'token_valid' => false,
+                        'validation_error' => 'Gagal memanggil API validasi Sidik: HTTP ' . $validationResponse->status()
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error('Token validation exception', [
+                    'error' => $e->getMessage(),
+                    'token' => $storeToken->token
+                ]);
+
+                return response()->json([
+                    'status' => 'error',
+                    'token_valid' => false,
+                    'validation_error' => 'Error validasi token: ' . $e->getMessage()
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Strict token validation error', [
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'token_valid' => false,
+                'validation_error' => 'System error: ' . $e->getMessage()
+            ]);
         }
     }
 
@@ -604,17 +948,136 @@ class PosController extends Controller
                 'needs_setup' => $storeToken ? false : true
             ];
 
-            // Test koneksi ke Kedit jika ada token
+            // Test koneksi dan validasi token dengan Kedit jika ada token
             if ($storeToken) {
                 try {
                     $keditBaseUrl = config('kedit.base_url');
-                    $response = Http::timeout(5)->get($keditBaseUrl);
-                    $result['kedit_connection'] = $response->successful() ? 'connected' : 'failed';
-                    $result['kedit_status_code'] = $response->status();
+                    
+                    // First test basic connection
+                    $connectionResponse = Http::timeout(5)->get($keditBaseUrl);
+                    $result['kedit_connection'] = $connectionResponse->successful() ? 'connected' : 'failed';
+                    $result['kedit_status_code'] = $connectionResponse->status();
+                    
+                    // If connection successful, validate token with Kedit
+                    if ($connectionResponse->successful()) {
+                        Log::info('Validating token with Kedit system', [
+                            'token' => $storeToken->token,
+                            'store_id' => $currentStoreId
+                        ]);
+                        
+                        // Test token validity by calling Kedit validation endpoint
+                        // First try the dedicated merchant token validation endpoint
+                        $tokenValidationResponse = Http::timeout(10)->post($keditBaseUrl . '/api/validate-merchant-token', [
+                            'token_mart' => $storeToken->token,
+                            'store_id' => $currentStoreId,
+                            'store_name' => $store->name
+                        ]);
+                        
+                        // If that doesn't exist, try using the is-validasi endpoint with a test user
+                        if ($tokenValidationResponse->status() === 404) {
+                            Log::info('Primary merchant validation endpoint not found, trying is-validasi endpoint for token validation');
+                            
+                            $tokenValidationResponse = Http::timeout(10)->post($keditBaseUrl . '/api/is-validasi', [
+                                'id_user_card' => 1, // Use test user ID to validate token
+                                'token_mart' => $storeToken->token
+                            ]);
+                        }
+                        
+                        if ($tokenValidationResponse->successful()) {
+                            $validationData = $tokenValidationResponse->json();
+                            Log::info('Token validation response from Kedit', $validationData);
+                            
+                            // Check if token is actually valid in Kedit system
+                            // For validate-merchant-token endpoint
+                            if (isset($validationData['status']) && $validationData['status'] === 'success' && 
+                                isset($validationData['valid']) && $validationData['valid'] === true) {
+                                
+                                $result['token_valid'] = true;
+                                $result['token_validation'] = 'success';
+                                $result['kedit_merchant_data'] = $validationData['data'] ?? null;
+                            }
+                            // For is-validasi endpoint (fallback validation)
+                            else if (isset($validationData['status']) && $validationData['status'] === 'success') {
+                                // If is-validasi returns success, it means token is valid
+                                $result['token_valid'] = true;
+                                $result['token_validation'] = 'success_fallback';
+                                $result['kedit_merchant_data'] = $validationData['data'] ?? null;
+                                
+                                Log::info('Token validated using is-validasi endpoint', [
+                                    'validation_method' => 'is_validasi_fallback',
+                                    'token' => $storeToken->token
+                                ]);
+                                
+                                // Extract merchant limit settings
+                                if (isset($validationData['data']['merchant'])) {
+                                    $merchantData = $validationData['data']['merchant'];
+                                    $result['merchant_limit_active'] = $merchantData['aktif_limit'] ?? 'N';
+                                    $result['merchant_name'] = $merchantData['nama_merchant'] ?? null;
+                                    $result['merchant_id'] = $merchantData['id'] ?? null;
+                                    
+                                    Log::info('Merchant limit settings retrieved', [
+                                        'merchant_id' => $result['merchant_id'],
+                                        'merchant_name' => $result['merchant_name'],
+                                        'limit_active' => $result['merchant_limit_active'],
+                                        'token' => $storeToken->token
+                                    ]);
+                                } else {
+                                    // Default to limit active if merchant data not available
+                                    $result['merchant_limit_active'] = 'Y';
+                                    Log::warning('Merchant data not found in validation response, defaulting to limit active');
+                                }
+                            } else {
+                                $result['token_valid'] = false;
+                                $result['token_validation'] = 'invalid';
+                                $result['validation_error'] = $validationData['message'] ?? 'Token tidak valid di sistem Kedit';
+                                $result['needs_setup'] = true; // Force setup if token invalid
+                            }
+                        } else if ($tokenValidationResponse->status() === 404) {
+                            // Primary endpoint not found - this is a critical error for token validation
+                            Log::error('Token validation endpoint not found in Kedit system', [
+                                'endpoint' => '/api/validate-merchant-token',
+                                'kedit_url' => $keditBaseUrl,
+                                'token' => $storeToken->token,
+                                'store_id' => $currentStoreId
+                            ]);
+                            
+                            $result['token_valid'] = false;
+                            $result['token_validation'] = 'endpoint_not_found';
+                            $result['validation_error'] = 'Endpoint validasi token tidak ditemukan di sistem Kedit. Token tidak dapat divalidasi.';
+                            $result['needs_setup'] = true;
+                        } else {
+                            // Token validation endpoint failed
+                            Log::error('Token validation failed', [
+                                'status' => $tokenValidationResponse->status(),
+                                'body' => $tokenValidationResponse->body()
+                            ]);
+                            
+                            $result['token_valid'] = false;
+                            $result['token_validation'] = 'failed';
+                            $result['validation_error'] = 'Gagal memvalidasi token dengan sistem Kedit: ' . $tokenValidationResponse->status();
+                        }
+                    } else {
+                        $result['token_valid'] = false;
+                        $result['token_validation'] = 'connection_failed';
+                        $result['validation_error'] = 'Tidak dapat terhubung ke sistem Kedit';
+                    }
+                    
                 } catch (\Exception $e) {
+                    Log::error('Token validation error', [
+                        'error' => $e->getMessage(),
+                        'token' => $storeToken->token
+                    ]);
+                    
                     $result['kedit_connection'] = 'failed';
                     $result['kedit_error'] = $e->getMessage();
+                    $result['token_valid'] = false;
+                    $result['token_validation'] = 'error';
+                    $result['validation_error'] = 'Error validasi token: ' . $e->getMessage();
                 }
+            } else {
+                $result['token_valid'] = false;
+                $result['token_validation'] = 'no_token';
+                $result['validation_error'] = 'Token tidak ditemukan';
             }
 
             return response()->json($result);

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/bootstrap-icons/bootstrap-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/pos.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/token-error-notifications.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/logo.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('assets/vendors/fontawesome/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/toastr/toastr.min.css') }}">
@@ -101,6 +102,7 @@
         window.keditBaseUrl = "{{ config('kedit.base_url') }}";
     </script>
     <script src="{{ asset('js/pos.js') }}"></script>
+    <script src="{{ asset('js/pos-barcode-fix.js') }}"></script>
     <script src="{{ asset('js/mobile.js')}}"></script> 
 </body>
 
