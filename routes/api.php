@@ -31,7 +31,6 @@ Route::prefix('transaction')->group(function() {
 
 Route::get('is-transaction-fingerprint-verified/{transactionCode}', [TransactionController::class, 'isTransactionFingerprintVerified']);
 Route::get('validate-barcode-for-sidik/{barcode}', [\App\Http\Controllers\Pos\PosController::class, 'validateBarcodeForSidik']);
-Route::get('test-sidik-connection', [\App\Http\Controllers\Pos\PosController::class, 'testSidikConnection']);
 Route::get('/user/{userId}/verify-fingerprint/{transactionCode}', [UserController::class, 'verifyFingerprint'])->name('user.verify-fingerprint');
 Route::post('/user/verify-fingerprint', [UserController::class, 'processVerifyFingerprint'])->name('user.process-verify-fingerprint');
 

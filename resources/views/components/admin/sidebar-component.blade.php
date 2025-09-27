@@ -492,9 +492,6 @@
                             <a href="{{ route('user.index') }}">{{__('sidebar.user')}}</a>
                         </li>
                         @endcan
-                        <li class="submenu-item {{ request()->is('pos-admin/system/store-tokens*') ? 'mm-active' : '' }}">
-                            <a href="{{ route('admin.store-tokens.index') }}">Token Toko</a>
-                        </li>
                     </ul>
                 </li>
                 @endif
@@ -594,12 +591,13 @@
                             <a href="{{ route('store.choose') }}">{{ __('sidebar.choose_store') }} </a>
                         </li>
                         @endcan
+                        <li class="submenu-item {{ request()->is('pos-admin/system/store-tokens*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('admin.store-tokens.index') }}">Token Toko</a>
+                        </li>
                     </ul>
                 </li>
                 @endif
                 {{-- END STORE MENU --}}
-
-            </ul>
         </div>
         <!-- Sidebar -->
     </div>
