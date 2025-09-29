@@ -80,6 +80,20 @@
                                             </div>
 
                                             <div class="col-sm-12 col-md-4 mb-3">
+                                                <label class="control-label">{{__('general.payment_method')}}</label>
+                                                <div class="input-group">
+                                                    <select class="form-control" id="payment_method" name="payment_method">
+                                                        <option value="">Semua Metode Pembayaran</option>
+                                                        @if(isset($payment_methods))
+                                                            @foreach ($payment_methods as $method => $label)
+                                                            <option value="{{ $method }}" @if (isset($_GET['payment_method'])) @if ($method==$_GET['payment_method']) selected @endif @endif>{{ $label }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-12 col-md-4 mb-3">
                                                 <label class="control-label">{{__('general.start_date')}}</label>
                                                 <div class="input-group">
                                                     <input type="date" name="start_date" id="start_date" class="form-control" value="{{ old('start_date') }}">
@@ -112,7 +126,18 @@
                                 </div>
                                 <div class="col-6">
                                     @can("Download Laporan Penjualan")
-                                    <a href="{{route('sell.download')}}" class="btn btn-sm btn-success float-end" style="margin-top: -13px; border: 2px solid white; margin-top: -5px"><i class="fas fa-download"></i> {{__("report.download_excel")}}</a>
+                                    <form method="GET" action="{{route('sell.download')}}" style="display: inline;" id="exportForm">
+                                        <input type="hidden" name="store" id="export_store" value="">
+                                        <input type="hidden" name="customer" id="export_customer" value="">
+                                        <input type="hidden" name="payment" id="export_payment" value="">
+                                        <input type="hidden" name="createdby" id="export_createdby" value="">
+                                        <input type="hidden" name="payment_method" id="export_payment_method" value="">
+                                        <input type="hidden" name="start_date" id="export_start_date" value="">
+                                        <input type="hidden" name="end_date" id="export_end_date" value="">
+                                        <button type="button" onclick="exportExcel()" class="btn btn-sm btn-success float-end" style="margin-top: -13px; border: 2px solid white; margin-top: -5px">
+                                            <i class="fas fa-download"></i> {{__("report.download_excel")}}
+                                        </button>
+                                    </form>
                                     @endcan
                                 </div>
                             </div>
@@ -173,33 +198,32 @@
                                                                 </a>
                                                                 @endif
                                                                 @endcan 
-                                                            </div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td> {{ my_date($d->created_at) }} <input type="hidden" id="idpo" value="{{ $d->id }}"></td>
                                                 <td> {{ $d->ref_no }} </td>
-                                                <td> {{ $d->store->name ?? '' }} </td>
-                                                <td> {{ $d->customer->name ?? '' }} </td>
-                                                <td> <span class=" badge bg-primary text-white">{{$status[$d->status]}} </span> </td>
-                                                <td> <span class=" badge bg-primary text-white">{{ count($d->sell) }}</span> </td>
-                                                <td> <span class=" badge bg-primary text-white">{{ $d->qty_sell }}</span> {{$d->return_sell}}</td>
-                                                <td> {{ number_format($d->final_total) }} </td>
-                                                <td> {{ $d->pay_total }} </td>
-                                                <td> {{ $d->method }} </td>
-                                                <td> {{ number_format($d->due_total ?? $d->final_total) }} </td>
-                                                <td> {{ number_format($d->profit) }} </td>
-                                                <td> {{ $d->createdby->name ?? '' }} </td>
+                                                <td> {{ $d->store->name ?? '-' }} </td>
+                                                <td> {{ $d->customer->name ?? '-' }} </td>
+                                                <td> <span class=" badge bg-primary text-white">{{$status[$d->status] ?? '-'}}</span> </td>
+                                                <td> <span class=" badge bg-primary text-white">{{ $d->sell_count ?? 0 }}</span> </td>
+                                                <td> <span class=" badge bg-primary text-white">{{ $d->qty_sell ?? 0 }}</span></td>
+                                                <td> {{ safe_number_format($d->final_total) }} </td>
+                                                <td> {{ safe_number_format($d->pay_total) }} </td>
+                                                <td> {{ $d->method ?? '-' }} </td>
+                                                <td> {{ safe_number_format($d->due_total ?? $d->final_total) }} </td>
+                                                <td> {{ safe_number_format($d->profit) }} </td>
+                                                <td> {{ $d->createdby->name ?? '-' }} </td>
                                             </tr>
                                             @endforeach
                                         </tbody>
                                         <tfoot>
                                             <tr style="background-color: #5cb85c; border: 1px solid white" class="text-white">
-                                                <th colspan="9" style="height: 100px; font-size:30px">{{__('report.total_income')}} : {{ number_format($jumlahProfit) }}</th>
-                                                <th>{{ number_format($jumlahTotal) }}</th>
+                                                <th colspan="9" style="height: 100px; font-size:30px">{{__('report.total_income')}} : {{ safe_number_format($jumlahProfit) }}</th>
+                                                <th>{{ safe_number_format($jumlahTotal) }}</th>
                                                 <th></th>
-                                                <th>{{ number_format($jumlahTerbayar) }}</th>
-                                                <th>{{ number_format($jumlahHutang) }}</th>
+                                                <th>{{ safe_number_format($jumlahTerbayar) }}</th>
+                                                <th>{{ safe_number_format($jumlahHutang) }}</th>
                                                 <th></th>
                                             </tr>
                                         </tfoot>
@@ -322,15 +346,29 @@
         var end = null;
 
         function searchProduct() {
-            var customer = $("#customer").val();
-            var store = $("#store").val();
-            var status = $("#status").val();
-            var payment = $("#payment").val();
-            var start = $("#start_date").val();
-            var end = $("#end_date").val();
-            var createdby = $("#createdby").val();
-            var url = domainpath + '/pos-admin/report/transaction/sell?customer=' + customer + '&store=' + store + '&createdby=' + createdby + '&status=' + status +
-                '&payment=' + payment + '&start_date=' + start + '&end_date=' + end;
+            var customer = $("#customer").val() || '';
+            var store = $("#store").val() || '';
+            var payment = $("#payment").val() || '';
+            var payment_method = $("#payment_method").val() || '';
+            var start = $("#start_date").val() || '';
+            var end = $("#end_date").val() || '';
+            var createdby = $("#createdby").val() || '';
+            
+            // Build URL dengan parameter yang tidak kosong
+            var params = [];
+            if (customer) params.push('customer=' + encodeURIComponent(customer));
+            if (store) params.push('store=' + encodeURIComponent(store));
+            if (createdby) params.push('createdby=' + encodeURIComponent(createdby));
+            if (payment) params.push('payment=' + encodeURIComponent(payment));
+            if (payment_method) params.push('payment_method=' + encodeURIComponent(payment_method));
+            if (start) params.push('start_date=' + encodeURIComponent(start));
+            if (end) params.push('end_date=' + encodeURIComponent(end));
+            
+            var url = domainpath + '/pos-admin/report/transaction/sell';
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+            
             spinner.show();
             setTimeout(function() {
                 $.ajax({
@@ -338,16 +376,37 @@
                     dataType: "html",
                     success: function(result) {
                         $('#sellContent').html(result);
-
                     }
                 });
                 spinner.hide();
             }, 130);
         }
 
-        function downloadReport()
-        {
+        function exportExcel() {
+            // Ambil nilai filter saat ini
+            var customer = $("#customer").val() || '';
+            var store = $("#store").val() || '';
+            var payment = $("#payment").val() || '';
+            var payment_method = $("#payment_method").val() || '';
+            var start = $("#start_date").val() || '';
+            var end = $("#end_date").val() || '';
+            var createdby = $("#createdby").val() || '';
             
+            // Set nilai ke hidden inputs
+            $("#export_store").val(store);
+            $("#export_customer").val(customer);
+            $("#export_payment").val(payment);
+            $("#export_createdby").val(createdby);
+            $("#export_payment_method").val(payment_method);
+            $("#export_start_date").val(start);
+            $("#export_end_date").val(end);
+            
+            // Submit form
+            $("#exportForm").submit();
+        }
+
+        function downloadReport() {
+            exportExcel();
         }
     </script>
     @endsection

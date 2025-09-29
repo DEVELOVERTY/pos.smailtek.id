@@ -51,34 +51,33 @@
                                 </a>
                                 @endif
                                 @endcan 
-                            </div>
                         </div>
                     </div>
                 </td>
                 <td> {{ my_date($d->created_at) }} <input type="hidden" id="idpo" value="{{ $d->id }}"></td>
-                <td> {{ $d->ref_no }} </td>
-                <td> {{ $d->store->name ?? '' }} </td>
-                <td> {{ $d->customer->name ?? '' }} </td>
-                <td> <span class=" badge bg-primary text-white">{{$status[$d->status]}} </span> </td>
-                <td> <span class=" badge bg-primary text-white">{{ count($d->sell) }}</span> {{$d->return_sell}}</td>
-                <td> <span class=" badge bg-primary text-white">0</span> </td>
-                <td> {{ number_format($d->final_total) }} </td>
-                <td> {{ $d->pay_total }} </td>
-                <td> {{ $d->method }} </td>
-                <td> {{ number_format($d->due_total ?? $d->final_total) }} </td>
-                <td> {{ number_format($d->profit) }} </td>
-                <td> {{ $d->createdby->name ?? '' }} </td>
+                <td> {{ $d->ref_no ?? '-' }} </td>
+                <td> {{ $d->store->name ?? '-' }} </td>
+                <td> {{ $d->customer->name ?? '-' }} </td>
+                <td> <span class=" badge bg-primary text-white">{{$status[$d->status] ?? '-'}}</span> </td>
+                <td> <span class=" badge bg-primary text-white">{{ $d->sell_count ?? 0 }}</span></td>
+                <td> <span class=" badge bg-primary text-white">{{ $d->qty_sell ?? 0 }}</span> </td>
+                <td> {{ safe_number_format($d->final_total) }} </td>
+                <td> {{ safe_number_format($d->pay_total) }} </td>
+                <td> {{ $d->method ?? '-' }} </td>
+                <td> {{ safe_number_format($d->due_total ?? $d->final_total) }} </td>
+                <td> {{ safe_number_format($d->profit) }} </td>
+                <td> {{ $d->createdby->name ?? '-' }} </td>
             </tr>
             @endforeach
 
         </tbody>
         <tfoot>
             <tr style="background-color: #5cb85c; border: 1px solid white" class="text-white">
-                <th colspan="9" style="height: 100px; font-size:30px">{{__('report.total_income')}} : {{ number_format($jumlahProfit) }}</th>
-                <th>{{ number_format($jumlahTotal) }}</th>
+                <th colspan="9" style="height: 100px; font-size:30px">{{__('report.total_income')}} : {{ safe_number_format($jumlahProfit) }}</th>
+                <th>{{ safe_number_format($jumlahTotal) }}</th>
                 <th></th>
-                <th>{{ number_format($jumlahTerbayar) }}</th>
-                <th>{{ number_format($jumlahHutang) }}</th>
+                <th>{{ safe_number_format($jumlahTerbayar) }}</th>
+                <th>{{ safe_number_format($jumlahHutang) }}</th>
                 <th></th>
             </tr>
         </tfoot>

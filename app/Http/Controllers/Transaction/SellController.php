@@ -370,76 +370,238 @@ class SellController extends Controller
     }
 
     public function report(Request $request)
-{
-    // --- Query dasar ---
-    $query = Transaction::select(
-            'transactions.*',
-            DB::raw('COALESCE(SUM(transaction_payments.amount),0) as pay_total'),
-            DB::raw('(transactions.final_total - COALESCE(SUM(transaction_payments.amount),0)) as due_total'),
-            DB::raw('MAX(transaction_payments.method) as method')
-        )
-        ->leftJoin('transaction_payments', 'transactions.id', '=', 'transaction_payments.transaction_id')
-        ->where('transactions.type', 'sell')
-        ->where('transactions.status', '!=', 'hold')
-        ->whereNull('transactions.deleted_at')
-        ->groupBy('transactions.id')
-        ->orderBy('transactions.id', 'desc');
+    {
+        // --- Query dasar yang lebih sederhana ---
+        $query = Transaction::select(
+                'transactions.*',
+                DB::raw('COALESCE(SUM(transaction_payments.amount),0) as pay_total'),
+                DB::raw('(transactions.final_total - COALESCE(SUM(transaction_payments.amount),0)) as due_total'),
+                DB::raw('MAX(transaction_payments.method) as method')
+            )
+            ->leftJoin('transaction_payments', 'transactions.id', '=', 'transaction_payments.transaction_id')
+            ->where('transactions.type', 'sell')
+            ->where('transactions.status', '!=', 'hold')
+            ->whereNull('transactions.deleted_at')
+            ->groupBy('transactions.id')
+            ->orderBy('transactions.id', 'desc');
 
-    // --- Filter ---
-    if ($request->store) $query->where('transactions.store_id', $request->store);
-    if ($request->customer) $query->where('transactions.customer_id', $request->customer);
-    if ($request->payment) $query->where('transactions.payment_status', $request->payment);
-    if ($request->createdby) $query->where('transactions.created_by', $request->createdby);
-    if ($request->start_date && $request->end_date) {
-        $query->whereBetween('transactions.created_at', [$request->start_date, $request->end_date]);
+        // --- Filter ---
+        if ($request->store) $query->where('transactions.store_id', $request->store);
+        if ($request->customer) $query->where('transactions.customer_id', $request->customer);
+        if ($request->payment) $query->where('transactions.payment_status', $request->payment);
+        if ($request->createdby) $query->where('transactions.created_by', $request->createdby);
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('transactions.created_at', [$request->start_date, $request->end_date]);
+        }
+        
+        // Filter berdasarkan metode pembayaran
+        if ($request->payment_method) {
+            $query->whereHas('payment', function($q) use ($request) {
+                $q->where('method', $request->payment_method);
+            });
+        }
+
+        // --- Pagination dengan eager loading ---
+        $data = (clone $query)->with([
+            'store:id,name',
+            'customer:id,name', 
+            'createdby:id,name'
+        ])->paginate(20);
+
+        // --- Hitung summary dari data yang sudah dipaginate ---
+        $allData = (clone $query)->get();
+        
+        // Pastikan semua nilai numeric dengan validasi
+        $jumlahTotal = 0;
+        $jumlahTerbayar = 0;
+        $jumlahHutang = 0;
+        $jumlahProfit = 0;
+        
+        foreach ($allData as $transaction) {
+            $jumlahTotal += $this->safeNumeric($transaction->final_total);
+            $jumlahTerbayar += $this->safeNumeric($transaction->pay_total);
+            $jumlahHutang += $this->safeNumeric($transaction->due_total);
+        }
+        
+        // Hitung profit secara batch untuk efisiensi
+        $allTransactionIds = $allData->pluck('id')->toArray();
+        if (!empty($allTransactionIds)) {
+            $profitData = $this->calculateProfitBatch($allTransactionIds);
+            $jumlahProfit = array_sum($profitData);
+        }
+
+        // --- Optimasi: Hitung jumlah sell items dalam batch ---
+        $transactionIds = $data->pluck('id')->toArray();
+        if (!empty($transactionIds)) {
+            $sellCounts = DB::table('sells')
+                ->select('transaction_id', DB::raw('COUNT(*) as sell_count'))
+                ->whereIn('transaction_id', $transactionIds)
+                ->groupBy('transaction_id')
+                ->pluck('sell_count', 'transaction_id');
+
+            $qtySells = DB::table('sells')
+                ->select('transaction_id', DB::raw('SUM(qty - COALESCE(qty_return, 0)) as total_qty'))
+                ->whereIn('transaction_id', $transactionIds)
+                ->groupBy('transaction_id')
+                ->pluck('total_qty', 'transaction_id');
+
+            // Hitung profit untuk pagination items
+            $paginationProfits = $this->calculateProfitBatch($transactionIds);
+            
+            // Attach data ke setiap item dengan validasi numeric
+            $data->getCollection()->transform(function ($item) use ($sellCounts, $qtySells, $paginationProfits) {
+                $item->sell_count = (int)($sellCounts[$item->id] ?? 0);
+                $item->qty_sell = (int)($qtySells[$item->id] ?? 0);
+                
+                // Pastikan semua nilai numeric menggunakan helper
+                $item->final_total = $this->safeNumeric($item->final_total);
+                $item->pay_total = $this->safeNumeric($item->pay_total);
+                $item->due_total = $this->safeNumeric($item->due_total);
+                
+                // Gunakan profit dari batch calculation
+                $item->profit = $this->safeNumeric($paginationProfits[$item->id] ?? 0);
+                
+                return $item;
+            });
+        }
+
+        // --- Cache data yang jarang berubah ---
+        try {
+            $user = cache()->remember('users_for_report', 300, function() {
+                return User::select('id', 'name')->get();
+            });
+            
+            $store = cache()->remember('stores_for_report', 300, function() {
+                return Store::select('id', 'name')->get();
+            });
+            
+            $customer = cache()->remember('customers_for_report', 300, function() {
+                return Customer::select('id', 'name')->get();
+            });
+        } catch (\Exception $e) {
+            $user = User::select('id', 'name')->get();
+            $store = Store::select('id', 'name')->get();
+            $customer = Customer::select('id', 'name')->get();
+        }
+
+        $payment = [
+            'paid'  => 'Terbayar',
+            'due'   => 'Hutang',
+        ];
+
+        // Data metode pembayaran untuk filter sesuai sistem SiDiK
+        $payment_methods = [
+            'cash' => 'Tunai (Cash)',
+            'sidik' => 'Kartu SiDiK',
+            'bank_transfer' => 'Transfer Bank',
+            'card' => 'Kartu Kredit/Debit',
+            'other' => 'Lainnya'
+        ];
+
+        $status = [
+            'due'   => __('general.sell_due'),
+            'paid'  => __('general.paid'),
+            'final' => __('general.paid')
+        ];
+
+        // --- Appends pagination ---
+        $data->appends($request->only('store','customer','payment','createdby','start_date','end_date','payment_method'));
+
+        // --- Return view ---
+        $viewData = compact(
+            'data', 'store', 'customer', 'payment', 'payment_methods', 'user', 'status',
+            'jumlahTotal', 'jumlahTerbayar', 'jumlahHutang', 'jumlahProfit'
+        );
+
+        if ($request->ajax()) {
+            return view('admin.reports.transaction.sell_page', ['page' => __('sidebar.sell_report')], $viewData);
+        }
+
+        return view('admin.reports.transaction.sell', ['page' => __('sidebar.sell_report')], $viewData);
     }
 
-    // --- Pagination untuk tabel ---
-    $data = (clone $query)->paginate(20);
-    
-    // --- Ambil semua untuk summary ---
-    $allTransactions = (clone $query)->get();
-
-    // --- Hitung totals ---
-    $jumlahTotal = $allTransactions->sum(function($t) { return (float) $t->final_total; });
-    $jumlahTerbayar = $allTransactions->sum(function($t) { return (float) $t->pay_total; });
-    $jumlahHutang = $allTransactions->sum(function($t) { return (float) $t->due_total; });
-    $jumlahProfit = $allTransactions->sum(function($t) { 
-        $totalModal = isset($t->total_modal) ? $t->total_modal : 0;
-        return (float) $t->final_total - (float) $totalModal; 
-    });
-
-    // --- Data tambahan ---
-    $user = User::all();
-    $store = Store::all();
-    $customer = Customer::all();
-
-    $payment = [
-        'paid'  => 'Terbayar',
-        'due'   => 'Hutang',
-    ];
-
-    $status = [
-        'due'   => __('general.sell_due'),
-        'paid'  => __('general.paid'),
-        'final' => __('general.paid')
-    ];
-
-    // --- Appends pagination ---
-    $data->appends($request->only('store','customer','payment','createdby','start_date','end_date'));
-
-    // --- Return view ---
-    $viewData = compact(
-        'data','store','customer','jumlahTotal','jumlahHutang','jumlahTerbayar',
-        'payment','jumlahProfit','user','status'
-    );
-
-    if ($request->ajax()) {
-        return view('admin.reports.transaction.sell_page', ['page' => __('sidebar.sell_report')], $viewData);
+    private function calculateProfit($transactionId)
+    {
+        try {
+            $result = DB::table("transactions as t")
+                ->join('sells as s', 't.id', '=', 's.transaction_id')
+                ->leftJoin('sell_purchases as sp', 's.id', '=', 'sp.sell_id')
+                ->leftJoin('purchases as pp', 'sp.purchase_id', '=', 'pp.id')
+                ->selectRaw("
+                    COALESCE(SUM(
+                        (COALESCE(s.qty, 0) - COALESCE(s.qty_return, 0)) * 
+                        (COALESCE(s.unit_price_before_disc, 0) - COALESCE(pp.purchase_price, 0))
+                    ), 0) AS profit
+                ")
+                ->where("t.id", $transactionId)
+                ->first();
+            
+            return $this->safeNumeric($result->profit ?? 0);
+        } catch (\Exception $e) {
+            Log::error("Error calculating profit for transaction {$transactionId}: " . $e->getMessage());
+            return 0;
+        }
     }
 
-    return view('admin.reports.transaction.sell', ['page' => __('sidebar.sell_report')], $viewData);
-}
+    private function calculateProfitBatch($transactionIds)
+    {
+        try {
+            if (empty($transactionIds)) {
+                return [];
+            }
+
+            $results = DB::table("transactions as t")
+                ->join('sells as s', 't.id', '=', 's.transaction_id')
+                ->leftJoin('sell_purchases as sp', 's.id', '=', 'sp.sell_id')
+                ->leftJoin('purchases as pp', 'sp.purchase_id', '=', 'pp.id')
+                ->selectRaw("
+                    t.id as transaction_id,
+                    COALESCE(SUM(
+                        (COALESCE(s.qty, 0) - COALESCE(s.qty_return, 0)) * 
+                        (COALESCE(s.unit_price_before_disc, 0) - COALESCE(pp.purchase_price, 0))
+                    ), 0) AS profit
+                ")
+                ->whereIn("t.id", $transactionIds)
+                ->groupBy('t.id')
+                ->get();
+
+            $profitData = [];
+            foreach ($results as $result) {
+                $profitData[$result->transaction_id] = $this->safeNumeric($result->profit);
+            }
+
+            // Pastikan semua transaction_id ada dalam array dengan default 0
+            foreach ($transactionIds as $id) {
+                if (!isset($profitData[$id])) {
+                    $profitData[$id] = 0;
+                }
+            }
+
+            return $profitData;
+        } catch (\Exception $e) {
+            Log::error("Error calculating profit batch: " . $e->getMessage());
+            return array_fill_keys($transactionIds, 0);
+        }
+    }
+
+    private function safeNumeric($value, $default = 0)
+    {
+        if (is_null($value) || $value === '' || $value === false) {
+            return $default;
+        }
+        
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+        
+        // Coba bersihkan string yang mungkin mengandung karakter non-numeric
+        $cleaned = preg_replace('/[^0-9.-]/', '', $value);
+        if (is_numeric($cleaned)) {
+            return (float) $cleaned;
+        }
+        
+        return $default;
+    }
 
 
     public function detail($id)
@@ -467,9 +629,11 @@ class SellController extends Controller
         return view('admin.reports.transaction.sell_print', ['page' => __('report.sell_detail')], compact('data','status'));
     }
 
-    public function download()
+    public function download(Request $request)
     {
-        return Excel::download(new SellingExportDefaulth(), 'laporan_penjualan.xlsx');
+        // Kirim parameter filter ke export class
+        $filters = $request->only('store','customer','payment','createdby','start_date','end_date','payment_method');
+        return Excel::download(new SellingExportDefaulth($filters), 'laporan_penjualan.xlsx');
     }
 
     /**

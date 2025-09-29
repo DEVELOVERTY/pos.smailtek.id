@@ -38,7 +38,7 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         },
-        "files": ["app/Currency.php"]
+        "files": ["app/Currency.php", "app/Helpers/NumberHelper.php"]
     },
     "autoload-dev": {
         "psr-4": {

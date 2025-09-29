@@ -1,24 +1,24 @@
 <?php return array (
   'charlieuki/receiptprinter' => 
   array (
-    'providers' => 
-    array (
-      0 => 'charlieuki\\ReceiptPrinter\\ReceiptPrinterServiceProvider',
-    ),
     'aliases' => 
     array (
       'ReceiptPrinter' => 'charlieuki\\ReceiptPrinter\\Facades\\ReceiptPrinter',
     ),
+    'providers' => 
+    array (
+      0 => 'charlieuki\\ReceiptPrinter\\ReceiptPrinterServiceProvider',
+    ),
   ),
   'facade/ignition' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Facade\\Ignition\\IgnitionServiceProvider',
-    ),
     'aliases' => 
     array (
       'Flare' => 'Facade\\Ignition\\Facades\\Flare',
+    ),
+    'providers' => 
+    array (
+      0 => 'Facade\\Ignition\\IgnitionServiceProvider',
     ),
   ),
   'fideloper/proxy' => 
@@ -55,13 +55,13 @@
   ),
   'jenssegers/agent' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Jenssegers\\Agent\\AgentServiceProvider',
-    ),
     'aliases' => 
     array (
       'Agent' => 'Jenssegers\\Agent\\Facades\\Agent',
+    ),
+    'providers' => 
+    array (
+      0 => 'Jenssegers\\Agent\\AgentServiceProvider',
     ),
   ),
   'laravel/sail' => 
@@ -87,13 +87,13 @@
   ),
   'maatwebsite/excel' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
-    ),
     'aliases' => 
     array (
       'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
+    ),
+    'providers' => 
+    array (
+      0 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
     ),
   ),
   'mews/purifier' => 
@@ -109,14 +109,14 @@
   ),
   'milon/barcode' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Milon\\Barcode\\BarcodeServiceProvider',
-    ),
     'aliases' => 
     array (
       'DNS1D' => 'Milon\\Barcode\\Facades\\DNS1DFacade',
       'DNS2D' => 'Milon\\Barcode\\Facades\\DNS2DFacade',
+    ),
+    'providers' => 
+    array (
+      0 => 'Milon\\Barcode\\BarcodeServiceProvider',
     ),
   ),
   'nesbot/carbon' => 
@@ -149,13 +149,13 @@
   ),
   'torann/geoip' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Torann\\GeoIP\\GeoIPServiceProvider',
-    ),
     'aliases' => 
     array (
       'GeoIP' => 'Torann\\GeoIP\\Facades\\GeoIP',
+    ),
+    'providers' => 
+    array (
+      0 => 'Torann\\GeoIP\\GeoIPServiceProvider',
     ),
   ),
 );

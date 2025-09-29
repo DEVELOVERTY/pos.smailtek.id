@@ -23,7 +23,7 @@ window.isBarcodeValid = async function(barcode) {
     
     // Show loading indicator
     Swal.fire({
-        title: 'Memvalidasi Barcode...',
+        title: 'Memvalidasi     ...',
         text: 'Mohon tunggu sebentar',
         allowOutsideClick: false,
         showConfirmButton: false,
