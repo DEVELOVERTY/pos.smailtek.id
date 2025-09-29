@@ -513,15 +513,15 @@ function totalPrice() {
     $("#fixTotal").html(rupiah(fixTotal));
     $("#jumlahtotal").val(rupiah(fixTotal));
 }
-
 /**
- *  Modal For Pay
+ *  Modal For pay
  */
 
 $("body").on("click", "#pay_shop", function () {
     clearInterval(fingerprintCheckTimer);
     paymodal = $(this).closest("body");
-    $("#on_due").val(paymodal.find("#fixTotal").html());
+    $("#on_pay").val(paymodal.find("#fixTotal").html());
+    $("#on_pay").trigger("keyup"); // Trigger keyup untuk update kalkulasi
     document.getElementById("pay_modal_click").click();
     $(".non-sidik").show();
     $("#sidik").removeClass("active");
@@ -529,7 +529,6 @@ $("body").on("click", "#pay_shop", function () {
     $("#cash").addClass("active");
     $("#card").removeClass("active");
     $("#paymentprocess").html("");
-
 
 });
 
